@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>플러스발상 채점</title>
+<title>플러스발상 채점시스템</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=DM+Mono:wght@400;700&display=swap');
 
@@ -20,6 +20,8 @@
   --yellow-bg: #fef6e4;
   --blue: #1a56a0;
   --blue-bg: #eaf1fb;
+  --purple: #6b21a8;
+  --purple-bg: #f3e8ff;
   --muted: #999;
   --muted2: #bbb;
   --text: #1a1a1a;
@@ -27,369 +29,225 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
-body {
-  font-family: 'Noto Sans KR', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-}
+body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
 /* ── TOPBAR ── */
 .topbar {
   background: var(--accent);
-  padding: 15px 20px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  padding: 14px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
 }
-.topbar-brand {
-  font-family: 'DM Mono', monospace;
-  font-size: 12px;
-  color: rgba(255,255,255,0.5);
-  letter-spacing: 1px;
-}
-.topbar-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: white;
-  margin-left: auto;
-}
+.topbar-logo { font-family: 'DM Mono', monospace; font-size: 12px; color: rgba(255,255,255,0.5); letter-spacing: 1px; }
+.topbar-title { font-size: 15px; font-weight: 700; color: white; }
 
-/* ── SCREENS ── */
+/* ── MODE TABS ── */
+.mode-bar {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  padding: 0 16px;
+}
+.mode-tab {
+  flex: 1; padding: 14px 8px;
+  font-size: 14px; font-weight: 500;
+  color: var(--muted); border: none;
+  background: transparent;
+  border-bottom: 2px solid transparent;
+  cursor: pointer; font-family: 'Noto Sans KR', sans-serif;
+  transition: all 0.2s;
+}
+.mode-tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 700; }
+
+/* ── MAIN ── */
 main { max-width: 480px; margin: 0 auto; padding: 20px 16px 80px; }
-.screen { display: none; }
-.screen.active { display: block; animation: fadeIn 0.2s ease; }
+.view { display: none; }
+.view.active { display: block; animation: fadeIn 0.2s ease; }
 @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
 
 /* ── CARDS ── */
-.card {
-  background: var(--white);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 18px;
-  margin-bottom: 12px;
-}
-.card-title {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 12px;
-}
+.card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; margin-bottom: 12px; }
+.card-title { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
 
 /* ── INPUT ── */
 .input {
-  width: 100%;
-  background: var(--bg);
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
-  padding: 13px 16px;
-  font-family: 'Noto Sans KR', sans-serif;
-  font-size: 15px;
-  color: var(--text);
-  outline: none;
-  transition: border-color 0.2s;
-  -webkit-appearance: none;
+  width: 100%; background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: 10px; padding: 13px 16px;
+  font-family: 'Noto Sans KR', sans-serif; font-size: 15px; color: var(--text);
+  outline: none; transition: border-color 0.2s; -webkit-appearance: none;
 }
 .input:focus { border-color: var(--accent); }
 select.input { cursor: pointer; }
 
 /* ── BUTTON ── */
 .btn {
-  width: 100%;
-  padding: 15px;
-  border-radius: 12px;
-  border: none;
-  font-family: 'Noto Sans KR', sans-serif;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.15s;
-  margin-top: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+  width: 100%; padding: 15px; border-radius: 12px; border: none;
+  font-family: 'Noto Sans KR', sans-serif; font-size: 15px; font-weight: 700;
+  cursor: pointer; transition: all 0.15s; margin-top: 8px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
 }
 .btn:active { transform: scale(0.98); }
-.btn-primary { background: var(--accent); color: white; }
-.btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--text); }
 .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+.btn-primary { background: var(--accent); color: white; }
+.btn-green { background: var(--green); color: white; }
+.btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--text); }
 
-/* ── UPLOAD ZONE ── */
+/* ── UPLOAD ── */
 .upload-zone {
-  border: 2px dashed var(--border);
-  border-radius: 14px;
-  background: var(--bg);
-  padding: 32px 20px;
-  text-align: center;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.2s;
+  border: 2px dashed var(--border); border-radius: 14px; background: var(--bg);
+  padding: 28px 20px; text-align: center; cursor: pointer;
+  position: relative; overflow: hidden; transition: all 0.2s;
 }
-.upload-zone:hover { border-color: var(--accent); background: rgba(26,26,26,0.03); }
+.upload-zone:hover { border-color: var(--accent); }
 .upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-.upload-icon { font-size: 2.2rem; margin-bottom: 10px; display: block; }
-.upload-label { font-size: 15px; font-weight: 700; margin-bottom: 5px; }
-.upload-sub { font-size: 13px; color: var(--muted); }
+.upload-icon { font-size: 2rem; margin-bottom: 8px; display: block; }
+.upload-label { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.upload-sub { font-size: 12px; color: var(--muted); }
 
 .preview-wrap { position: relative; display: none; }
-.preview-img { width: 100%; border-radius: 12px; display: block; max-height: 320px; object-fit: contain; background: var(--bg); }
-.preview-change {
-  position: absolute; bottom: 10px; right: 10px;
-  background: rgba(0,0,0,0.7); color: white;
-  border: none; border-radius: 8px;
-  padding: 6px 12px; font-size: 12px;
-  cursor: pointer; font-family: 'Noto Sans KR', sans-serif;
-}
+.preview-img { width: 100%; border-radius: 12px; display: block; max-height: 300px; object-fit: contain; background: var(--bg); }
+.preview-change { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; border: none; border-radius: 8px; padding: 6px 12px; font-size: 12px; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; }
 
 /* ── SPINNER ── */
-.spinner {
-  width: 18px; height: 18px;
-  border: 2.5px solid rgba(255,255,255,0.3);
-  border-top-color: white;
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-  display: none;
-}
+.spinner { width: 18px; height: 18px; border: 2.5px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
 .loading .spinner { display: block; }
 .loading .btn-text { display: none; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* ── RESULT ── */
-.score-hero {
-  text-align: center;
-  padding: 28px 20px 24px;
-  background: var(--white);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  margin-bottom: 12px;
-}
-.score-ring {
-  width: 100px; height: 100px;
-  border-radius: 50%;
-  background: var(--accent);
-  color: white;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 14px;
-}
-.score-num {
-  font-family: 'DM Mono', monospace;
-  font-size: 36px;
-  font-weight: 700;
-  line-height: 1;
-}
+.score-hero { text-align: center; padding: 28px 20px 24px; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 12px; }
+.score-ring { width: 100px; height: 100px; border-radius: 50%; background: var(--accent); color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 14px; }
+.score-num { font-family: 'DM Mono', monospace; font-size: 36px; font-weight: 700; line-height: 1; }
 .score-unit { font-size: 12px; opacity: 0.6; margin-top: 2px; }
 .score-name { font-size: 17px; font-weight: 700; }
 .score-sub { font-size: 13px; color: var(--muted); margin-top: 4px; font-family: 'DM Mono', monospace; }
 
-/* ── RESULT ROWS ── */
-.result-list { padding: 4px 0; }
-.result-row {
-  display: flex;
-  align-items: center;
-  padding: 11px 0;
-  border-bottom: 1px solid var(--border);
-  gap: 10px;
-}
+.result-row { display: flex; align-items: center; padding: 11px 0; border-bottom: 1px solid var(--border); gap: 10px; }
 .result-row:last-child { border-bottom: none; }
-.rnum {
-  font-family: 'DM Mono', monospace;
-  font-size: 13px;
-  color: var(--muted);
-  min-width: 34px;
-}
+.rnum { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--muted); min-width: 34px; }
 .rcontent { flex: 1; }
 .rstudent { font-size: 14px; font-weight: 500; }
 .rcorrect { font-size: 12px; color: var(--muted); margin-top: 2px; }
-.rbadge {
-  font-size: 11px;
-  font-weight: 700;
-  padding: 4px 10px;
-  border-radius: 7px;
-  white-space: nowrap;
-}
+.rbadge { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 7px; white-space: nowrap; }
 .badge-o { background: var(--green-bg); color: var(--green); }
 .badge-x { background: var(--red-bg); color: var(--red); }
 .badge-pending { background: var(--yellow-bg); color: var(--yellow); }
 
-/* ── OOPS NOTE ── */
-.wrong-summary {
-  background: var(--red-bg);
-  border: 1px solid rgba(192,57,43,0.2);
-  border-radius: 12px;
-  padding: 14px 16px;
-  margin-bottom: 12px;
-}
+/* ── WRONG SUMMARY ── */
+.wrong-summary { background: var(--red-bg); border: 1px solid rgba(192,57,43,0.2); border-radius: 12px; padding: 14px 16px; margin-bottom: 12px; }
 .wrong-title { font-size: 12px; font-weight: 700; color: var(--red); margin-bottom: 6px; }
 .wrong-nums { font-size: 14px; font-weight: 500; line-height: 1.8; }
 
-/* ── INFO ── */
-.info-box {
-  background: var(--blue-bg);
-  border: 1px solid rgba(26,86,160,0.15);
-  border-radius: 12px;
-  padding: 13px 16px;
-  font-size: 13px;
-  color: var(--blue);
-  line-height: 1.6;
-  margin-bottom: 12px;
-}
-
-/* ── ERROR ── */
-.error-msg { color: var(--red); font-size: 13px; margin-top: 6px; text-align: center; min-height: 18px; }
+/* ── INFO BOX ── */
+.info-box { background: var(--blue-bg); border: 1px solid rgba(26,86,160,0.15); border-radius: 12px; padding: 13px 16px; font-size: 13px; color: var(--blue); line-height: 1.6; margin-bottom: 12px; }
+.success-box { background: var(--green-bg); border: 1px solid rgba(30,122,74,0.2); border-radius: 12px; padding: 13px 16px; font-size: 13px; color: var(--green); line-height: 1.6; margin-bottom: 12px; }
+.error-box { background: var(--red-bg); border: 1px solid rgba(192,57,43,0.2); border-radius: 12px; padding: 13px 16px; font-size: 13px; color: var(--red); line-height: 1.6; margin-bottom: 12px; }
 
 /* ── LOADING SCREEN ── */
-.loading-screen {
-  text-align: center;
-  padding: 60px 20px;
-}
-.loading-spinner {
-  width: 40px; height: 40px;
-  border: 3px solid var(--border);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  margin: 0 auto 16px;
-}
+.loading-screen { text-align: center; padding: 60px 20px; }
+.loading-spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
 .loading-msg { font-size: 14px; color: var(--muted); }
 .loading-sub { font-size: 12px; color: var(--muted2); margin-top: 6px; }
 
-/* ── STEP INDICATOR ── */
-.steps {
-  display: flex;
-  align-items: center;
-  gap: 0;
-  margin-bottom: 20px;
-  padding: 0 4px;
+/* ── QUIZ LIST ── */
+.quiz-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 0; border-bottom: 1px solid var(--border);
 }
-.step {
-  flex: 1;
-  text-align: center;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--muted2);
-  position: relative;
-}
+.quiz-item:last-child { border-bottom: none; }
+.quiz-name { font-size: 14px; font-weight: 500; }
+.quiz-count { font-size: 12px; color: var(--muted); margin-top: 3px; }
+.quiz-badge { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 7px; background: var(--green-bg); color: var(--green); }
+
+.error-msg { color: var(--red); font-size: 13px; margin-top: 6px; text-align: center; min-height: 18px; }
+
+/* ── STEP ── */
+.steps { display: flex; align-items: center; margin-bottom: 20px; padding: 0 4px; }
+.step { flex: 1; text-align: center; font-size: 11px; font-weight: 600; color: var(--muted2); }
 .step.active { color: var(--accent); }
 .step.done { color: var(--green); }
-.step-dot {
-  width: 24px; height: 24px;
-  border-radius: 50%;
-  background: var(--border);
-  display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 5px;
-  font-size: 11px;
-  font-family: 'DM Mono', monospace;
-}
+.step-dot { width: 24px; height: 24px; border-radius: 50%; background: var(--border); display: flex; align-items: center; justify-content: center; margin: 0 auto 5px; font-size: 11px; font-family: 'DM Mono', monospace; }
 .step.active .step-dot { background: var(--accent); color: white; }
 .step.done .step-dot { background: var(--green); color: white; }
-.step-line {
-  height: 2px;
-  background: var(--border);
-  flex: 1;
-  margin-top: -17px;
-  position: relative;
-  z-index: -1;
-}
+.step-line { height: 2px; background: var(--border); flex: 1; margin-top: -17px; position: relative; z-index: -1; }
 </style>
 </head>
 <body>
 
 <div class="topbar">
-  <div class="topbar-brand">✦ PLUS</div>
-  <div class="topbar-title" id="topbar-title">숙제 채점</div>
+  <div class="topbar-logo">✦ PLUS</div>
+  <div class="topbar-title" id="topbar-title">채점시스템</div>
+</div>
+
+<div class="mode-bar">
+  <button class="mode-tab active" onclick="switchMode('student')">학생 채점</button>
+  <button class="mode-tab" onclick="switchMode('teacher')">선생님</button>
 </div>
 
 <main>
 
-<!-- ── SCREEN 1: 시험지 선택 + 이름 ── -->
-<div class="screen active" id="screen-select">
+<!-- ══════════════════════════════════════
+  학생 VIEW
+══════════════════════════════════════ -->
+
+<!-- 학생 STEP1: 시험지+이름 -->
+<div class="view active" id="v-student-select">
   <div style="height:16px"></div>
-
   <div class="steps">
-    <div class="step active">
-      <div class="step-dot">1</div>
-      <div>정보입력</div>
-    </div>
+    <div class="step active"><div class="step-dot">1</div><div>정보입력</div></div>
     <div class="step-line"></div>
-    <div class="step">
-      <div class="step-dot">2</div>
-      <div>사진업로드</div>
-    </div>
+    <div class="step"><div class="step-dot">2</div><div>사진업로드</div></div>
     <div class="step-line"></div>
-    <div class="step">
-      <div class="step-dot">3</div>
-      <div>채점결과</div>
-    </div>
+    <div class="step"><div class="step-dot">3</div><div>결과</div></div>
   </div>
-
   <div class="card">
     <div class="card-title">시험지 선택</div>
-    <select class="input" id="quiz-select">
-      <option value="">시험지를 선택하세요</option>
-      <option value="M31기본">M3.1 (기본) 100문제</option>
+    <select class="input" id="s-quiz-select">
+      <option value="">불러오는 중...</option>
     </select>
   </div>
-
   <div class="card">
     <div class="card-title">이름</div>
-    <input class="input" type="text" id="student-name" placeholder="이름 입력" maxlength="10" autocomplete="off">
+    <input class="input" type="text" id="s-name" placeholder="이름 입력" maxlength="10" autocomplete="off">
   </div>
-
-  <div id="select-error" class="error-msg"></div>
-  <button class="btn btn-primary" onclick="goToUpload()">
-    <span>다음 →</span>
-  </button>
+  <div id="s-select-err" class="error-msg"></div>
+  <button class="btn btn-primary" onclick="sGoToUpload()">다음 →</button>
 </div>
 
-<!-- ── SCREEN 2: 사진 업로드 ── -->
-<div class="screen" id="screen-upload">
+<!-- 학생 STEP2: 사진 업로드 -->
+<div class="view" id="v-student-upload">
   <div style="height:16px"></div>
-
   <div class="steps">
     <div class="step done"><div class="step-dot">✓</div><div>정보입력</div></div>
     <div class="step-line"></div>
     <div class="step active"><div class="step-dot">2</div><div>사진업로드</div></div>
     <div class="step-line"></div>
-    <div class="step"><div class="step-dot">3</div><div>채점결과</div></div>
+    <div class="step"><div class="step-dot">3</div><div>결과</div></div>
   </div>
-
-  <div class="info-box" id="upload-info-box"></div>
-
+  <div class="info-box" id="s-upload-info"></div>
   <div class="card">
     <div class="card-title">답안지 사진</div>
-    <div class="upload-zone" id="upload-zone">
-      <input type="file" id="file-input" accept="image/*" onchange="onFileSelected(event)">
+    <div class="upload-zone" id="s-upload-zone">
+      <input type="file" id="s-file" accept="image/*" onchange="sOnFile(event)">
       <span class="upload-icon">📷</span>
       <div class="upload-label">답안지 사진 찍기</div>
       <div class="upload-sub">번호별로 쓴 답안지를 찍어주세요</div>
     </div>
-    <div class="preview-wrap" id="preview-wrap">
-      <img class="preview-img" id="preview-img" src="" alt="">
-      <button class="preview-change" onclick="resetPhoto()">↩ 다시 찍기</button>
+    <div class="preview-wrap" id="s-preview-wrap">
+      <img class="preview-img" id="s-preview-img" src="" alt="">
+      <button class="preview-change" onclick="sResetPhoto()">↩ 다시 찍기</button>
     </div>
   </div>
-
-  <div id="upload-error" class="error-msg"></div>
-  <button class="btn btn-primary" id="grade-btn" onclick="startGrading()">
+  <div id="s-upload-err" class="error-msg"></div>
+  <button class="btn btn-primary" id="s-grade-btn" onclick="sStartGrading()">
     <div class="spinner"></div>
     <span class="btn-text">✦ 채점하기</span>
   </button>
-  <button class="btn btn-outline" onclick="goBack()" style="margin-top:8px">← 뒤로</button>
+  <button class="btn btn-outline" onclick="showView('v-student-select')" style="margin-top:8px">← 뒤로</button>
 </div>
 
-<!-- ── SCREEN 3: 채점 중 ── -->
-<div class="screen" id="screen-loading">
+<!-- 학생 로딩 -->
+<div class="view" id="v-student-loading">
   <div class="loading-screen">
     <div class="loading-spinner"></div>
     <div class="loading-msg">AI가 답안지를 읽고 있어요...</div>
@@ -397,18 +255,16 @@ select.input { cursor: pointer; }
   </div>
 </div>
 
-<!-- ── SCREEN 4: 결과 ── -->
-<div class="screen" id="screen-result">
+<!-- 학생 STEP3: 결과 -->
+<div class="view" id="v-student-result">
   <div style="height:16px"></div>
-
   <div class="steps">
     <div class="step done"><div class="step-dot">✓</div><div>정보입력</div></div>
     <div class="step-line"></div>
     <div class="step done"><div class="step-dot">✓</div><div>사진업로드</div></div>
     <div class="step-line"></div>
-    <div class="step active"><div class="step-dot">3</div><div>채점결과</div></div>
+    <div class="step active"><div class="step-dot">3</div><div>결과</div></div>
   </div>
-
   <div class="score-hero">
     <div class="score-ring">
       <div class="score-num" id="r-score">-</div>
@@ -417,17 +273,66 @@ select.input { cursor: pointer; }
     <div class="score-name" id="r-name"></div>
     <div class="score-sub" id="r-fraction"></div>
   </div>
-
-  <div id="wrong-summary-wrap"></div>
-
+  <div id="r-wrong-wrap"></div>
   <div class="card">
     <div class="card-title">문제별 결과</div>
-    <div class="result-list" id="result-list"></div>
+    <div id="r-detail"></div>
+  </div>
+  <div id="r-teacher-wrap"></div>
+  <button class="btn btn-primary" onclick="sReset()" style="margin-top:8px">처음으로</button>
+</div>
+
+
+<!-- ══════════════════════════════════════
+  선생님 VIEW
+══════════════════════════════════════ -->
+
+<!-- 선생님 메인 -->
+<div class="view" id="v-teacher-main">
+  <div style="height:16px"></div>
+
+  <!-- 시험지 목록 -->
+  <div class="card">
+    <div class="card-title">등록된 시험지</div>
+    <div id="t-quiz-list">
+      <div style="text-align:center;padding:20px;color:var(--muted);font-size:13px">불러오는 중...</div>
+    </div>
   </div>
 
-  <div id="teacher-wrap"></div>
+  <!-- PDF 업로드로 정답 등록 -->
+  <div class="card">
+    <div class="card-title">📄 PDF로 정답 등록</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.6">
+      답지 PDF를 올리면 AI가 읽어서 자동으로 정답을 등록해요.
+    </div>
 
-  <button class="btn btn-primary" onclick="resetAll()" style="margin-top:8px">처음으로</button>
+    <div style="margin-bottom:10px">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:6px">시험지 ID (영문/숫자)</div>
+      <input class="input" type="text" id="t-quiz-id" placeholder="예: M31기본" autocomplete="off">
+    </div>
+    <div style="margin-bottom:10px">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:6px">시험지 이름</div>
+      <input class="input" type="text" id="t-quiz-name" placeholder="예: M3.1 (기본) 100문제" autocomplete="off">
+    </div>
+    <div style="margin-bottom:10px">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:6px">문제 수</div>
+      <input class="input" type="number" id="t-quiz-count" placeholder="예: 100" min="1" max="200">
+    </div>
+
+    <div class="upload-zone" id="t-upload-zone">
+      <input type="file" id="t-pdf-file" accept="application/pdf,image/*" onchange="tOnFile(event)">
+      <span class="upload-icon">📎</span>
+      <div class="upload-label">답지 PDF 또는 사진 올리기</div>
+      <div class="upload-sub">답지 파일을 선택해주세요</div>
+    </div>
+    <div id="t-file-name" style="font-size:13px;color:var(--green);margin-top:8px;display:none"></div>
+
+    <div id="t-upload-msg"></div>
+    <button class="btn btn-green" id="t-register-btn" onclick="tRegisterQuiz()">
+      <div class="spinner"></div>
+      <span class="btn-text">✦ 정답 등록하기</span>
+    </button>
+  </div>
 </div>
 
 </main>
@@ -437,219 +342,194 @@ select.input { cursor: pointer; }
 // 설정
 // ================================================================
 var WORKERS_URL = 'https://restless-queen-374b.yimdw0330.workers.dev';
-
-// ================================================================
-// 정답 데이터 (M3.1 기본)
-// ================================================================
-var QUIZ_DATA = {
-  'M31기본': {
-    name: 'M3.1 (기본) 100문제',
-    problems: [
-      { num:1,  type:'obj5',   answer:'3' },
-      { num:2,  type:'short',  answer:'-3≤x≤22' },
-      { num:3,  type:'short',  answer:'-1,1/3' },
-      { num:4,  type:'teacher',answer:'-√a²와 √((-a)²)' },
-      { num:5,  type:'teacher',answer:'(-√a)²,√(1/a)²-√(a-1/a)²' },
-      { num:6,  type:'short',  answer:'a' },
-      { num:7,  type:'obj5',   answer:'4' },
-      { num:8,  type:'short',  answer:'㉢' },
-      { num:9,  type:'short',  answer:'ㄱㄷㅁㅇ' },
-      { num:10, type:'short',  answer:'3' },
-      { num:11, type:'teacher',answer:'A옳다/B옳지않다/C옳지않다/D옳지않다' },
-      { num:12, type:'teacher',answer:'xy-√(x²+y²)' },
-      { num:13, type:'short',  answer:'13' },
-      { num:14, type:'short',  answer:'8/5' },
-      { num:15, type:'short',  answer:'7' },
-      { num:16, type:'short',  answer:'b<a<c' },
-      { num:17, type:'teacher',answer:'2a+b' },
-      { num:18, type:'short',  answer:'a-1' },
-      { num:19, type:'short',  answer:'-4a' },
-      { num:20, type:'teacher',answer:'-8+√69' },
-      { num:21, type:'teacher',answer:'2√10-7' },
-      { num:22, type:'short',  answer:'71' },
-      { num:23, type:'short',  answer:'81' },
-      { num:24, type:'short',  answer:'48' },
-      { num:25, type:'short',  answer:'48' },
-      { num:26, type:'short',  answer:'ㄴ,ㄷ' },
-      { num:27, type:'short',  answer:'4' },
-      { num:28, type:'short',  answer:'81' },
-      { num:29, type:'short',  answer:'5' },
-      { num:30, type:'short',  answer:'14' },
-      { num:31, type:'short',  answer:'84' },
-      { num:32, type:'short',  answer:'4' },
-      { num:33, type:'short',  answer:'28' },
-      { num:34, type:'teacher',answer:'2,8,18,72' },
-      { num:35, type:'short',  answer:'81' },
-      { num:36, type:'short',  answer:'7' },
-      { num:37, type:'short',  answer:'12' },
-      { num:38, type:'short',  answer:'4' },
-      { num:39, type:'short',  answer:'ㄱ,ㄷ,ㅁ' },
-      { num:40, type:'teacher',answer:'(1)a=-√10,b=4-√5,c=√10,d=4+√5 (2)-8√10/11' },
-      { num:41, type:'short',  answer:'ㄴ,ㄹ,ㅁ' },
-      { num:42, type:'teacher',answer:'5-3√2' },
-      { num:43, type:'teacher',answer:'4√2/3' },
-      { num:44, type:'teacher',answer:'1+√2' },
-      { num:45, type:'teacher',answer:'(15+3√2)/4' },
-      { num:46, type:'teacher',answer:'2√3' },
-      { num:47, type:'short',  answer:'㉢' },
-      { num:48, type:'obj5',   answer:'5' },
-      { num:49, type:'teacher',answer:'√10/10' },
-      { num:50, type:'short',  answer:'6/5' },
-      { num:51, type:'obj5',   answer:'4' },
-      { num:52, type:'short',  answer:'3' },
-      { num:53, type:'short',  answer:'58' },
-      { num:54, type:'obj5',   answer:'4' },
-      { num:55, type:'short',  answer:'-2' },
-      { num:56, type:'teacher',answer:'(1)a=1,b=-2 (2)A<B' },
-      { num:57, type:'short',  answer:'4' },
-      { num:58, type:'teacher',answer:'72√2' },
-      { num:59, type:'short',  answer:'-60' },
-      { num:60, type:'obj5',   answer:'3' },
-      { num:61, type:'short',  answer:'35.44' },
-      { num:62, type:'teacher',answer:'100a+1/10b' },
-      { num:63, type:'teacher',answer:'-4/5a+14/5b' },
-      { num:64, type:'short',  answer:'398' },
-      { num:65, type:'short',  answer:'82' },
-      { num:66, type:'short',  answer:'45' },
-      { num:67, type:'short',  answer:'258' },
-      { num:68, type:'short',  answer:'4' },
-      { num:69, type:'teacher',answer:'4√3-6' },
-      { num:70, type:'short',  answer:'10' },
-      { num:71, type:'teacher',answer:'-3√2+2√5' },
-      { num:72, type:'teacher',answer:'√3/3' },
-      { num:73, type:'teacher',answer:'√10/4' },
-      { num:74, type:'short',  answer:'3' },
-      { num:75, type:'teacher',answer:'-6-4√2' },
-      { num:76, type:'short',  answer:'2' },
-      { num:77, type:'short',  answer:'9' },
-      { num:78, type:'teacher',answer:'12+6√3' },
-      { num:79, type:'teacher',answer:'(30+9√6)/2' },
-      { num:80, type:'teacher',answer:'√2' },
-      { num:81, type:'teacher',answer:'2√3' },
-      { num:82, type:'short',  answer:'-4' },
-      { num:83, type:'teacher',answer:'√3' },
-      { num:84, type:'teacher',answer:'40+26√2' },
-      { num:85, type:'short',  answer:'3' },
-      { num:86, type:'teacher',answer:'6√5' },
-      { num:87, type:'teacher',answer:'2√3/3' },
-      { num:88, type:'teacher',answer:'(1)1:1.5,1:√6/2 (2)1:√2 (3)1.73배' },
-      { num:89, type:'teacher',answer:'10+10√5' },
-      { num:90, type:'teacher',answer:'(3√5-5)/5' },
-      { num:91, type:'teacher',answer:'52√15/9' },
-      { num:92, type:'short',  answer:'8500' },
-      { num:93, type:'teacher',answer:'√10 km' },
-      { num:94, type:'teacher',answer:'12√3 cm' },
-      { num:95, type:'teacher',answer:'√2' },
-      { num:96, type:'teacher',answer:'-√15/5' },
-      { num:97, type:'teacher',answer:'(1)2√2π/7 (2)2√7π/7 (3)√14/2배' },
-      { num:98, type:'short',  answer:'2' },
-      { num:99, type:'teacher',answer:'22.54' },
-      { num:100,type:'teacher',answer:'66.78' },
-    ]
-  }
-};
+var GAS_URL = 'https://script.google.com/macros/s/AKfycbyMnbbiat1wf77YHc3iYqzfT-MuEb_-BR7VYismnNDSBFn1mY4deohvRMbl58AN6t-t/exec';
 
 // ================================================================
 // 상태
 // ================================================================
-var state = {
-  quizId: '',
-  studentName: '',
-  imageBase64: null,
-  imageType: 'image/jpeg',
+var sState = {
+  quizId: '', quizName: '', problems: [],
+  studentName: '', imageBase64: null, imageType: 'image/jpeg'
 };
+var tState = { fileBase64: null, fileType: null, fileName: null };
+var currentMode = 'student';
 
 // ================================================================
-// 화면 전환
+// 모드 전환
 // ================================================================
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+function switchMode(mode) {
+  currentMode = mode;
+  document.querySelectorAll('.mode-tab').forEach(function(t, i) {
+    t.classList.toggle('active', (mode==='student' && i===0) || (mode==='teacher' && i===1));
+  });
+  if (mode === 'student') {
+    showView('v-student-select');
+    document.getElementById('topbar-title').textContent = '학생 채점';
+    loadQuizList('s-quiz-select');
+  } else {
+    showView('v-teacher-main');
+    document.getElementById('topbar-title').textContent = '선생님';
+    loadTeacherQuizList();
+  }
+}
+
+function showView(id) {
+  document.querySelectorAll('.view').forEach(function(v) { v.classList.remove('active'); });
   document.getElementById(id).classList.add('active');
   window.scrollTo(0, 0);
 }
 
 // ================================================================
-// STEP 1 → 2
+// 시험지 목록 로드 (학생용 select)
 // ================================================================
-function goToUpload() {
-  var quizId = document.getElementById('quiz-select').value;
-  var name = document.getElementById('student-name').value.trim();
-  var err = document.getElementById('select-error');
+function loadQuizList(selectId) {
+  var sel = document.getElementById(selectId);
+  sel.innerHTML = '<option value="">불러오는 중...</option>';
+
+  fetch(GAS_URL, {
+    method: 'POST',
+    body: JSON.stringify({ action: 'getQuizList' })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.success && data.list.length > 0) {
+      sel.innerHTML = '<option value="">시험지를 선택하세요</option>';
+      data.list.forEach(function(q) {
+        sel.innerHTML += '<option value="' + q.id + '">' + q.name + ' (' + q.count + '문제)</option>';
+      });
+    } else {
+      sel.innerHTML = '<option value="">등록된 시험지가 없습니다</option>';
+    }
+  })
+  .catch(function() {
+    sel.innerHTML = '<option value="">불러오기 실패 - 새로고침 해주세요</option>';
+  });
+}
+
+// ================================================================
+// 선생님 시험지 목록
+// ================================================================
+function loadTeacherQuizList() {
+  var container = document.getElementById('t-quiz-list');
+  container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px">불러오는 중...</div>';
+
+  fetch(GAS_URL, {
+    method: 'POST',
+    body: JSON.stringify({ action: 'getQuizList' })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.success && data.list.length > 0) {
+      container.innerHTML = '';
+      data.list.forEach(function(q) {
+        var item = document.createElement('div');
+        item.className = 'quiz-item';
+        item.innerHTML =
+          '<div><div class="quiz-name">' + q.name + '</div>' +
+          '<div class="quiz-count">' + q.count + '문제 · ID: ' + q.id + '</div></div>' +
+          '<div class="quiz-badge">등록됨</div>';
+        container.appendChild(item);
+      });
+    } else {
+      container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px">등록된 시험지가 없어요.<br>아래에서 PDF를 올려 등록해주세요!</div>';
+    }
+  })
+  .catch(function() {
+    container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--red);font-size:13px">불러오기 실패</div>';
+  });
+}
+
+// ================================================================
+// 학생: STEP1 → STEP2
+// ================================================================
+function sGoToUpload() {
+  var quizId = document.getElementById('s-quiz-select').value;
+  var name = document.getElementById('s-name').value.trim();
+  var err = document.getElementById('s-select-err');
   if (!quizId) { err.textContent = '시험지를 선택해주세요.'; return; }
   if (!name) { err.textContent = '이름을 입력해주세요.'; return; }
   err.textContent = '';
-  state.quizId = quizId;
-  state.studentName = name;
 
-  var quiz = QUIZ_DATA[quizId];
-  var autoCount = quiz.problems.filter(function(p) { return p.type !== 'teacher'; }).length;
-  var teacherCount = quiz.problems.filter(function(p) { return p.type === 'teacher'; }).length;
+  sState.quizId = quizId;
+  sState.studentName = name;
 
-  document.getElementById('upload-info-box').innerHTML =
-    '<strong>' + quiz.name + '</strong> · ' + name + ' 학생<br>' +
-    '자동채점 ' + autoCount + '문제 + 선생님채점 ' + teacherCount + '문제';
+  // 정답 가져오기
+  fetch(GAS_URL, {
+    method: 'POST',
+    body: JSON.stringify({ action: 'getAnswers', quizId: quizId })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (!data.success || data.problems.length === 0) {
+      err.textContent = '정답 데이터를 불러오지 못했습니다.';
+      return;
+    }
+    sState.problems = data.problems;
+    var quizName = document.getElementById('s-quiz-select').options[document.getElementById('s-quiz-select').selectedIndex].text;
+    sState.quizName = quizName;
 
-  document.getElementById('topbar-title').textContent = name + ' 채점';
-  showScreen('screen-upload');
-}
+    var auto = data.problems.filter(function(p) { return p.type !== '서술형'; }).length;
+    var teacher = data.problems.filter(function(p) { return p.type === '서술형'; }).length;
+    document.getElementById('s-upload-info').innerHTML =
+      '<strong>' + quizName + '</strong> · ' + name + ' 학생<br>자동채점 ' + auto + '문제 + 선생님채점 ' + teacher + '문제';
 
-function goBack() {
-  showScreen('screen-select');
+    document.getElementById('topbar-title').textContent = name + ' 채점';
+    showView('v-student-upload');
+  })
+  .catch(function() {
+    err.textContent = '네트워크 오류가 발생했습니다.';
+  });
 }
 
 // ================================================================
-// 사진 선택
+// 학생: 사진 선택
 // ================================================================
-function onFileSelected(e) {
+function sOnFile(e) {
   var file = e.target.files[0];
   if (!file) return;
-  state.imageType = file.type || 'image/jpeg';
+  sState.imageType = file.type || 'image/jpeg';
   var reader = new FileReader();
   reader.onload = function(ev) {
-    state.imageBase64 = ev.target.result.split(',')[1];
-    document.getElementById('preview-img').src = ev.target.result;
-    document.getElementById('upload-zone').style.display = 'none';
-    document.getElementById('preview-wrap').style.display = 'block';
+    sState.imageBase64 = ev.target.result.split(',')[1];
+    document.getElementById('s-preview-img').src = ev.target.result;
+    document.getElementById('s-upload-zone').style.display = 'none';
+    document.getElementById('s-preview-wrap').style.display = 'block';
   };
   reader.readAsDataURL(file);
 }
 
-function resetPhoto() {
-  state.imageBase64 = null;
-  document.getElementById('file-input').value = '';
-  document.getElementById('upload-zone').style.display = 'block';
-  document.getElementById('preview-wrap').style.display = 'none';
+function sResetPhoto() {
+  sState.imageBase64 = null;
+  document.getElementById('s-file').value = '';
+  document.getElementById('s-upload-zone').style.display = 'block';
+  document.getElementById('s-preview-wrap').style.display = 'none';
 }
 
 // ================================================================
-// 채점 시작
+// 학생: 채점 시작
 // ================================================================
-async function startGrading() {
-  var err = document.getElementById('upload-error');
-  if (!state.imageBase64) { err.textContent = '사진을 먼저 올려주세요.'; return; }
+async function sStartGrading() {
+  var err = document.getElementById('s-upload-err');
+  if (!sState.imageBase64) { err.textContent = '사진을 먼저 올려주세요.'; return; }
   err.textContent = '';
-
-  showScreen('screen-loading');
+  showView('v-student-loading');
 
   try {
-    // 1. Claude가 사진에서 답 읽기
-    var extracted = await extractAnswersFromPhoto(state.imageBase64, state.imageType);
-    // 2. 채점
+    var extracted = await extractFromPhoto(sState.imageBase64, sState.imageType, sState.problems);
     var result = gradeAnswers(extracted);
-    // 3. 결과 표시
+    await saveResultToSheets(result);
     showResult(result);
   } catch(e) {
-    showScreen('screen-upload');
-    document.getElementById('upload-error').textContent = '오류: ' + e.message;
+    showView('v-student-upload');
+    document.getElementById('s-upload-err').textContent = '오류: ' + e.message;
   }
 }
 
 // ================================================================
-// Claude API: 사진에서 답 추출
+// Claude: 사진에서 답 추출
 // ================================================================
-async function extractAnswersFromPhoto(b64, mediaType) {
-  var quiz = QUIZ_DATA[state.quizId];
-  var autoProblems = quiz.problems.filter(function(p) { return p.type !== 'teacher'; });
+async function extractFromPhoto(b64, mediaType, problems) {
+  var autoProblems = problems.filter(function(p) { return p.type !== '서술형'; });
   var numList = autoProblems.map(function(p) { return p.num + '번'; }).join(', ');
 
   var prompt = '이 사진은 수학 답안지입니다.\n' +
@@ -657,7 +537,7 @@ async function extractAnswersFromPhoto(b64, mediaType) {
     '규칙:\n' +
     '- 반드시 JSON 배열로만 응답\n' +
     '- 형식: [{"num": 문제번호, "answer": "학생답"}, ...]\n' +
-    '- 답이 안 보이거나 비어있으면 "": ""\n' +
+    '- 답이 안 보이거나 비어있으면 answer를 ""\n' +
     '- 마크다운, 코드블록 없이 JSON만 출력\n' +
     '- 객관식은 숫자만 (예: "3"), 단답형은 쓴 그대로';
 
@@ -677,47 +557,33 @@ async function extractAnswersFromPhoto(b64, mediaType) {
     })
   });
 
-  if (!response.ok) {
-    throw new Error('서버 오류 ' + response.status);
-  }
-
+  if (!response.ok) throw new Error('서버 오류 ' + response.status);
   var data = await response.json();
-
-  if (data.error) {
-    throw new Error(data.error.message || JSON.stringify(data.error));
-  }
-
-  if (!data.content || !Array.isArray(data.content)) {
-    throw new Error('응답 오류: ' + JSON.stringify(data).substring(0, 100));
-  }
+  if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+  if (!data.content || !Array.isArray(data.content)) throw new Error('응답 오류');
 
   var raw = data.content.map(function(c) { return c.text || ''; }).join('');
   var cleaned = raw.replace(/```json|```/g, '').trim();
-
   var parsed = JSON.parse(cleaned);
-  // 배열 → 번호 맵으로 변환
-  var answerMap = {};
-  parsed.forEach(function(item) {
-    answerMap[String(item.num)] = String(item.answer || '').trim();
-  });
-  return answerMap;
+
+  var map = {};
+  parsed.forEach(function(item) { map[String(item.num)] = String(item.answer || '').trim(); });
+  return map;
 }
 
 // ================================================================
-// 채점 로직
+// 채점
 // ================================================================
 function normalize(str) {
-  return String(str).replace(/\s/g, '').toLowerCase()
-    .replace(/×/g, '*').replace(/÷/g, '/');
+  return String(str).replace(/\s/g, '').toLowerCase();
 }
 
 function gradeAnswers(extractedMap) {
-  var quiz = QUIZ_DATA[state.quizId];
   var correct = 0, autoTotal = 0, teacherTotal = 0;
   var details = [];
 
-  quiz.problems.forEach(function(p) {
-    if (p.type === 'teacher') {
+  sState.problems.forEach(function(p) {
+    if (p.type === '서술형') {
       teacherTotal++;
       details.push({ num: p.num, type: 'teacher', studentAns: '', correctAns: p.answer, status: 'pending' });
       return;
@@ -726,25 +592,39 @@ function gradeAnswers(extractedMap) {
     var studentAns = extractedMap[String(p.num)] || '';
     var isCorrect = normalize(studentAns) === normalize(p.answer);
     if (isCorrect) correct++;
-    details.push({
-      num: p.num,
-      type: p.type,
-      studentAns: studentAns,
-      correctAns: p.answer,
-      status: isCorrect ? 'correct' : 'wrong'
-    });
+    details.push({ num: p.num, type: p.type, studentAns: studentAns, correctAns: p.answer, status: isCorrect ? 'correct' : 'wrong' });
   });
 
   var score = autoTotal > 0 ? Math.round((correct / autoTotal) * 100) : 0;
   return {
-    studentName: state.studentName,
-    quizName: quiz.name,
-    correct: correct,
-    autoTotal: autoTotal,
-    teacherTotal: teacherTotal,
-    score: score,
-    details: details
+    quizId: sState.quizId,
+    quizName: sState.quizName,
+    studentName: sState.studentName,
+    correct: correct, autoTotal: autoTotal, teacherTotal: teacherTotal,
+    score: score, details: details
   };
+}
+
+// ================================================================
+// Sheets에 결과 저장
+// ================================================================
+async function saveResultToSheets(result) {
+  try {
+    await fetch(GAS_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'saveResult',
+        quizId: result.quizId,
+        quizName: result.quizName,
+        studentName: result.studentName,
+        score: result.score,
+        correct: result.correct,
+        autoTotal: result.autoTotal,
+        teacherTotal: result.teacherTotal,
+        details: result.details
+      })
+    });
+  } catch(e) { console.log('저장 실패:', e); }
 }
 
 // ================================================================
@@ -753,66 +633,167 @@ function gradeAnswers(extractedMap) {
 function showResult(r) {
   document.getElementById('r-score').textContent = r.score;
   document.getElementById('r-name').textContent = r.studentName + ' 학생';
-  document.getElementById('r-fraction').textContent =
-    '자동채점 ' + r.correct + '/' + r.autoTotal + '  |  선생님채점 ' + r.teacherTotal + '문제';
+  document.getElementById('r-fraction').textContent = '자동채점 ' + r.correct + '/' + r.autoTotal + '  |  선생님채점 ' + r.teacherTotal + '문제';
 
-  // 오답 목록
   var wrongNums = r.details.filter(function(d) { return d.status === 'wrong'; }).map(function(d) { return d.num + '번'; });
-  var wrongWrap = document.getElementById('wrong-summary-wrap');
-  if (wrongNums.length > 0) {
-    wrongWrap.innerHTML = '<div class="wrong-summary"><div class="wrong-title">❌ 틀린 문제 (' + wrongNums.length + '개)</div><div class="wrong-nums">' + wrongNums.join('  ·  ') + '</div></div>';
-  } else {
-    wrongWrap.innerHTML = '';
-  }
+  var wrongWrap = document.getElementById('r-wrong-wrap');
+  wrongWrap.innerHTML = wrongNums.length > 0
+    ? '<div class="wrong-summary"><div class="wrong-title">❌ 틀린 문제 (' + wrongNums.length + '개)</div><div class="wrong-nums">' + wrongNums.join('  ·  ') + '</div></div>'
+    : '';
 
-  // 문제별 결과
-  var list = document.getElementById('result-list');
-  list.innerHTML = '';
+  var detail = document.getElementById('r-detail');
+  detail.innerHTML = '';
   r.details.forEach(function(d) {
     var row = document.createElement('div');
     row.className = 'result-row';
-
     if (d.status === 'pending') {
-      row.innerHTML =
-        '<div class="rnum">' + d.num + '번</div>' +
-        '<div class="rcontent"><div class="rstudent">서술형</div></div>' +
-        '<div class="rbadge badge-pending">채점대기</div>';
+      row.innerHTML = '<div class="rnum">' + d.num + '번</div><div class="rcontent"><div class="rstudent">서술형</div></div><div class="rbadge badge-pending">채점대기</div>';
     } else {
       var wrongPart = d.status === 'wrong' ? '<div class="rcorrect">정답: ' + d.correctAns + '</div>' : '';
-      row.innerHTML =
-        '<div class="rnum">' + d.num + '번</div>' +
-        '<div class="rcontent"><div class="rstudent">내 답: ' + (d.studentAns || '(미기재)') + '</div>' + wrongPart + '</div>' +
-        '<div class="rbadge ' + (d.status === 'correct' ? 'badge-o' : 'badge-x') + '">' + (d.status === 'correct' ? '✓' : '✗') + '</div>';
+      row.innerHTML = '<div class="rnum">' + d.num + '번</div><div class="rcontent"><div class="rstudent">내 답: ' + (d.studentAns || '(미기재)') + '</div>' + wrongPart + '</div><div class="rbadge ' + (d.status === 'correct' ? 'badge-o' : 'badge-x') + '">' + (d.status === 'correct' ? '✓' : '✗') + '</div>';
     }
-    list.appendChild(row);
+    detail.appendChild(row);
   });
 
-  // 선생님 채점 대기 목록
   var teacherNums = r.details.filter(function(d) { return d.status === 'pending'; }).map(function(d) { return d.num + '번'; });
-  var tw = document.getElementById('teacher-wrap');
-  if (teacherNums.length > 0) {
-    tw.innerHTML = '<div class="card" style="margin-top:0"><div class="card-title">선생님 채점 대기</div><div style="font-size:13px;color:var(--muted);line-height:1.8">' + teacherNums.join(', ') + '</div></div>';
-  } else {
-    tw.innerHTML = '';
+  var tw = document.getElementById('r-teacher-wrap');
+  tw.innerHTML = teacherNums.length > 0
+    ? '<div class="card" style="margin-top:0"><div class="card-title">선생님 채점 대기</div><div style="font-size:13px;color:var(--muted);line-height:1.8">' + teacherNums.join(', ') + '</div></div>'
+    : '';
+
+  showView('v-student-result');
+}
+
+function sReset() {
+  sState.quizId = ''; sState.studentName = ''; sState.problems = [];
+  sState.imageBase64 = null;
+  document.getElementById('s-name').value = '';
+  document.getElementById('s-select-err').textContent = '';
+  sResetPhoto();
+  document.getElementById('topbar-title').textContent = '학생 채점';
+  showView('v-student-select');
+}
+
+// ================================================================
+// 선생님: PDF/사진 파일 선택
+// ================================================================
+function tOnFile(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  tState.fileType = file.type;
+  tState.fileName = file.name;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    tState.fileBase64 = ev.target.result.split(',')[1];
+    var fn = document.getElementById('t-file-name');
+    fn.textContent = '✓ ' + file.name;
+    fn.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+// ================================================================
+// 선생님: 정답 등록
+// ================================================================
+async function tRegisterQuiz() {
+  var quizId = document.getElementById('t-quiz-id').value.trim();
+  var quizName = document.getElementById('t-quiz-name').value.trim();
+  var quizCount = parseInt(document.getElementById('t-quiz-count').value);
+  var msgEl = document.getElementById('t-upload-msg');
+  var btn = document.getElementById('t-register-btn');
+
+  if (!quizId) { msgEl.innerHTML = '<div class="error-box">시험지 ID를 입력해주세요.</div>'; return; }
+  if (!quizName) { msgEl.innerHTML = '<div class="error-box">시험지 이름을 입력해주세요.</div>'; return; }
+  if (!quizCount || quizCount < 1) { msgEl.innerHTML = '<div class="error-box">문제 수를 입력해주세요.</div>'; return; }
+  if (!tState.fileBase64) { msgEl.innerHTML = '<div class="error-box">파일을 올려주세요.</div>'; return; }
+
+  btn.disabled = true; btn.classList.add('loading');
+  msgEl.innerHTML = '<div class="info-box">AI가 답지를 읽고 있어요... (10~30초)</div>';
+
+  try {
+    var problems = await extractAnswersFromFile(tState.fileBase64, tState.fileType, quizCount);
+
+    // Sheets에 저장
+    var saveRes = await fetch(GAS_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'saveQuiz',
+        quizId: quizId,
+        quizName: quizName,
+        problems: problems
+      })
+    });
+    var saveData = await saveRes.json();
+
+    if (saveData.success) {
+      msgEl.innerHTML = '<div class="success-box">✓ ' + saveData.message + '</div>';
+      loadTeacherQuizList();
+      loadQuizList('s-quiz-select');
+    } else {
+      msgEl.innerHTML = '<div class="error-box">저장 실패: ' + (saveData.message || '오류') + '</div>';
+    }
+  } catch(e) {
+    msgEl.innerHTML = '<div class="error-box">오류: ' + e.message + '</div>';
   }
 
-  showScreen('screen-result');
+  btn.disabled = false; btn.classList.remove('loading');
+}
+
+// ================================================================
+// Claude: 답지에서 정답 추출
+// ================================================================
+async function extractAnswersFromFile(b64, fileType, count) {
+  var mediaType = fileType === 'application/pdf' ? 'application/pdf' : (fileType || 'image/jpeg');
+
+  var prompt = '이 파일은 수학 답지입니다.\n' +
+    '1번부터 ' + count + '번까지 각 문제의 정답을 추출해주세요.\n\n' +
+    '규칙:\n' +
+    '- 반드시 JSON 배열로만 응답\n' +
+    '- 형식: [{"num": 문제번호, "type": "문제유형", "answer": "정답"}, ...]\n' +
+    '- type은 다음 중 하나: "객관식5"(①②③④⑤ 중 선택), "단답형"(숫자/간단식), "서술형"(풀이필요)\n' +
+    '- 객관식 정답은 번호만: "1","2","3","4","5"\n' +
+    '- 마크다운, 코드블록 없이 JSON만 출력\n' +
+    '- 정답이 없거나 서술형이면 type을 "서술형"으로';
+
+  var contentArr;
+  if (mediaType === 'application/pdf') {
+    contentArr = [
+      { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: b64 } },
+      { type: 'text', text: prompt }
+    ];
+  } else {
+    contentArr = [
+      { type: 'image', source: { type: 'base64', media_type: mediaType, data: b64 } },
+      { type: 'text', text: prompt }
+    ];
+  }
+
+  var response = await fetch(WORKERS_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 4000,
+      messages: [{ role: 'user', content: contentArr }]
+    })
+  });
+
+  if (!response.ok) throw new Error('서버 오류 ' + response.status);
+  var data = await response.json();
+  if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+  if (!data.content || !Array.isArray(data.content)) throw new Error('응답 오류');
+
+  var raw = data.content.map(function(c) { return c.text || ''; }).join('');
+  var cleaned = raw.replace(/```json|```/g, '').trim();
+  return JSON.parse(cleaned);
 }
 
 // ================================================================
 // 초기화
 // ================================================================
-function resetAll() {
-  state.quizId = '';
-  state.studentName = '';
-  state.imageBase64 = null;
-  document.getElementById('quiz-select').value = '';
-  document.getElementById('student-name').value = '';
-  document.getElementById('select-error').textContent = '';
-  resetPhoto();
-  document.getElementById('topbar-title').textContent = '숙제 채점';
-  showScreen('screen-select');
-}
+window.onload = function() {
+  loadQuizList('s-quiz-select');
+};
 </script>
 </body>
 </html>
