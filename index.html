@@ -210,7 +210,7 @@ select.input { cursor: pointer; }
   <div class="card">
     <div class="card-title">답안지 사진</div>
     <div class="upload-zone" id="s-upload-zone">
-      <input type="file" id="s-file" accept="image/*" onchange="sOnFile(event)">
+      <input type="file" id="s-file" accept="image/*,application/pdf" onchange="sOnFile(event)">
       <span class="upload-icon">📷</span>
       <div class="upload-label">답안지 사진 찍기</div>
       <div class="upload-sub">번호별로 쓴 답안지를 찍어주세요</div>
@@ -520,7 +520,10 @@ async function extractFromPhoto(b64, mediaType, problems) {
 }
 
 function normalize(str) {
-  return String(str).replace(/\s/g, '').toLowerCase();
+  return String(str)
+    .replace(/①/g, '1').replace(/②/g, '2').replace(/③/g, '3')
+    .replace(/④/g, '4').replace(/⑤/g, '5')
+    .replace(/\s/g, '').toLowerCase();
 }
 
 function gradeAnswers(extractedMap) {
