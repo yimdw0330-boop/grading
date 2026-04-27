@@ -293,6 +293,41 @@ select.input { cursor: pointer; }
   <button class="btn btn-primary" onclick="sReset()" style="margin-top:8px">처음으로</button>
 </div>
 
+<!-- ── 최종 결과 화면 ── -->
+<div class="view" id="v-final-result">
+  <div style="height:16px"></div>
+
+  <!-- 점수 히어로 -->
+  <div class="score-hero">
+    <div class="score-ring" id="fr-ring">
+      <div class="score-num" id="fr-score">-</div>
+      <div class="score-unit">점</div>
+    </div>
+    <div class="score-name" id="fr-name"></div>
+    <div class="score-sub" id="fr-fraction"></div>
+  </div>
+
+  <!-- 응원 메시지 -->
+  <div id="fr-cheer"></div>
+
+  <!-- 결과 요약 -->
+  <div class="card">
+    <div class="card-title">📊 채점 결과 요약</div>
+    <div id="fr-stats" style="display:flex;gap:12px;margin-bottom:12px"></div>
+    <div id="fr-summary" style="font-size:14px;line-height:2.2"></div>
+  </div>
+
+  <!-- 선생님 문자 -->
+  <div class="card">
+    <div class="card-title">📱 선생님께 전송할 내용</div>
+    <div id="fr-sms" style="font-size:13px;line-height:1.8;font-family:DM Mono,monospace;white-space:pre-wrap;background:var(--bg);border-radius:8px;padding:12px;color:var(--text)"></div>
+    <div style="font-size:11px;color:var(--muted);margin-top:8px;padding:8px;background:var(--yellow-bg);border-radius:8px;">💻 PC에서는 위 내용을 복사해서 문자/카톡으로 보내주세요</div>
+    <button class="btn btn-blue" onclick="sendSMS()" style="margin-top:10px">📱 선생님께 결과 문자 보내기</button>
+  </div>
+
+  <button class="btn btn-primary" onclick="sReset()" style="margin-top:8px">처음으로</button>
+</div>
+
 <!-- ── 선생님 VIEW ── -->
 <div class="view" id="v-teacher-main">
   <div style="height:16px"></div>
@@ -716,8 +751,7 @@ function showResult(r) {
 
   tw.innerHTML =
     '<button class="btn btn-yellow" onclick="sRegrade()" style="margin-bottom:8px">↺ 수정 후 재채점하기</button>' +
-    summaryHtml +
-    smsPreviewHtml;
+    '<button class="btn btn-green" onclick="showFinalResult()" style="margin-bottom:8px">✓ 채점 완료</button>';
 
   showView('v-student-result');
 }
@@ -760,6 +794,58 @@ function editChoice(num, val, btn) {
 }
 
 // ── 재채점 ──
+function showFinalResult() {
+  var r = window._lastResult;
+  if (!r) return;
+
+  var wrongNums = r.details.filter(function(d){return d.status==='wrong';}).map(function(d){return d.num+'번';});
+  var teacherNums = r.details.filter(function(d){return d.status==='teacher';}).map(function(d){return d.num+'번';});
+
+  // 점수
+  document.getElementById('fr-score').textContent = r.score;
+  document.getElementById('fr-name').textContent = r.studentName+' 학생';
+  document.getElementById('fr-fraction').textContent = '자동채점 '+r.correct+'/'+r.autoTotal+'  |  선생님채점 '+r.teacherTotal+'문제';
+
+  // 응원 메시지
+  var msg='', msgStyle='';
+  if (r.score===100) { msg='🏆 완벽해요! 100점 달성! 정말 대단해요!'; msgStyle='background:linear-gradient(135deg,#f6d365,#fda085);color:white;'; }
+  else if (r.score>=90) { msg='🌟 훌륭해요! 거의 다 맞혔어요! 조금만 더!'; msgStyle='background:var(--green-bg);color:var(--green);'; }
+  else if (r.score>=80) { msg='😊 잘했어요! 틀린 문제 다시 한 번 풀어봐요!'; msgStyle='background:var(--blue-bg);color:var(--blue);'; }
+  else if (r.score>=70) { msg='💪 조금 더 할 수 있어요! 틀린 문제 꼭 복습해요!'; msgStyle='background:var(--yellow-bg);color:var(--yellow);'; }
+  else if (r.score>=60) { msg='📚 틀린 문제를 확인하고 선생님께 물어봐요!'; msgStyle='background:var(--yellow-bg);color:var(--yellow);'; }
+  else { msg='🤗 괜찮아요! 틀린 문제를 선생님과 함께 풀어봐요!'; msgStyle='background:var(--red-bg);color:var(--red);'; }
+  document.getElementById('fr-cheer').innerHTML =
+    '<div style="'+msgStyle+'border-radius:12px;padding:14px 16px;font-size:14px;font-weight:700;margin-bottom:12px;text-align:center;">'+msg+'</div>';
+
+  // 통계 카드
+  document.getElementById('fr-stats').innerHTML =
+    '<div style="flex:1;background:var(--bg);border-radius:10px;padding:12px;text-align:center">'+
+      '<div style="font-size:11px;color:var(--muted);margin-bottom:4px">전체 문항</div>'+
+      '<div style="font-size:22px;font-weight:700;font-family:DM Mono,monospace">'+r.autoTotal+'</div>'+
+    '</div>'+
+    '<div style="flex:1;background:var(--green-bg);border-radius:10px;padding:12px;text-align:center">'+
+      '<div style="font-size:11px;color:var(--green);margin-bottom:4px">맞은 개수</div>'+
+      '<div style="font-size:22px;font-weight:700;font-family:DM Mono,monospace;color:var(--green)">'+r.correct+'</div>'+
+    '</div>'+
+    '<div style="flex:1;background:var(--red-bg);border-radius:10px;padding:12px;text-align:center">'+
+      '<div style="font-size:11px;color:var(--red);margin-bottom:4px">틀린 개수</div>'+
+      '<div style="font-size:22px;font-weight:700;font-family:DM Mono,monospace;color:var(--red)">'+(r.autoTotal-r.correct)+'</div>'+
+    '</div>';
+
+  // 요약
+  document.getElementById('fr-summary').innerHTML =
+    '<div><span style="color:var(--red)">✗</span> <strong>틀린 번호:</strong> '+(wrongNums.length>0?wrongNums.join(', '):'없음')+'</div>'+
+    (teacherNums.length>0
+      ? '<div><span style="color:var(--blue)">👨‍🏫</span> <strong>선생님 채점 요청:</strong> '+teacherNums.join(', ')+'</div>'+
+        '<div style="margin-top:8px;padding:10px 12px;background:var(--yellow-bg);border-radius:8px;font-size:13px;color:var(--yellow);font-weight:600;">📸 위 번호의 풀이를 카톡으로 찍어 선생님께 보내주세요!</div>'
+      : '');
+
+  // 문자 내용
+  document.getElementById('fr-sms').textContent = buildSMSText(r);
+
+  showView('v-final-result');
+}
+
 function sRegrade() {
   var newAnswers = Object.assign({}, sState.answers);
 
@@ -782,7 +868,7 @@ function sRegrade() {
   var result = gradeAnswers(newAnswers);
   saveResultToSheets(result);
   window._lastResult = result;
-  showResult(result);
+  showFinalResult();
 }
 
 // ── Sheets 저장 ──
