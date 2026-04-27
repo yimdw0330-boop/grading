@@ -20,8 +20,6 @@
   --yellow-bg: #fef6e4;
   --blue: #1a56a0;
   --blue-bg: #eaf1fb;
-  --purple: #6b21a8;
-  --purple-bg: #f3e8ff;
   --muted: #999;
   --muted2: #bbb;
   --text: #1a1a1a;
@@ -32,8 +30,7 @@
 body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
 .topbar {
-  background: var(--accent);
-  padding: 14px 20px;
+  background: var(--accent); padding: 14px 20px;
   display: flex; align-items: center; justify-content: space-between;
   position: sticky; top: 0; z-index: 100;
 }
@@ -41,19 +38,14 @@ body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: va
 .topbar-title { font-size: 15px; font-weight: 700; color: white; }
 
 .mode-bar {
-  background: var(--white);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  padding: 0 16px;
+  background: var(--white); border-bottom: 1px solid var(--border);
+  display: flex; padding: 0 16px;
 }
 .mode-tab {
-  flex: 1; padding: 14px 8px;
-  font-size: 14px; font-weight: 500;
-  color: var(--muted); border: none;
-  background: transparent;
-  border-bottom: 2px solid transparent;
-  cursor: pointer; font-family: 'Noto Sans KR', sans-serif;
-  transition: all 0.2s;
+  flex: 1; padding: 14px 8px; font-size: 14px; font-weight: 500;
+  color: var(--muted); border: none; background: transparent;
+  border-bottom: 2px solid transparent; cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif; transition: all 0.2s;
 }
 .mode-tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 700; }
 
@@ -85,21 +77,9 @@ select.input { cursor: pointer; }
 .btn-primary { background: var(--accent); color: white; }
 .btn-green { background: var(--green); color: white; }
 .btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--text); }
-
-.upload-zone {
-  border: 2px dashed var(--border); border-radius: 14px; background: var(--bg);
-  padding: 28px 20px; text-align: center; cursor: pointer;
-  position: relative; overflow: hidden; transition: all 0.2s;
-}
-.upload-zone:hover { border-color: var(--accent); }
-.upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-.upload-icon { font-size: 2rem; margin-bottom: 8px; display: block; }
-.upload-label { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
-.upload-sub { font-size: 12px; color: var(--muted); }
-
-.preview-wrap { position: relative; display: none; }
-.preview-img { width: 100%; border-radius: 12px; display: block; max-height: 300px; object-fit: contain; background: var(--bg); }
-.preview-change { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; border: none; border-radius: 8px; padding: 6px 12px; font-size: 12px; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; }
+.btn-yellow { background: var(--yellow); color: white; }
+.btn-red { background: var(--red); color: white; }
+.btn-blue { background: var(--blue); color: white; }
 
 .spinner { width: 18px; height: 18px; border: 2.5px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
 .loading .spinner { display: block; }
@@ -118,11 +98,11 @@ select.input { cursor: pointer; }
 .rnum { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--muted); min-width: 34px; }
 .rcontent { flex: 1; }
 .rstudent { font-size: 14px; font-weight: 500; }
-.rcorrect { font-size: 12px; color: var(--muted); margin-top: 2px; }
 .rbadge { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 7px; white-space: nowrap; }
 .badge-o { background: var(--green-bg); color: var(--green); }
 .badge-x { background: var(--red-bg); color: var(--red); }
 .badge-pending { background: var(--yellow-bg); color: var(--yellow); }
+.badge-teacher { background: var(--blue-bg); color: var(--blue); }
 
 .wrong-summary { background: var(--red-bg); border: 1px solid rgba(192,57,43,0.2); border-radius: 12px; padding: 14px 16px; margin-bottom: 12px; }
 .wrong-title { font-size: 12px; font-weight: 700; color: var(--red); margin-bottom: 6px; }
@@ -131,22 +111,12 @@ select.input { cursor: pointer; }
 .info-box { background: var(--blue-bg); border: 1px solid rgba(26,86,160,0.15); border-radius: 12px; padding: 13px 16px; font-size: 13px; color: var(--blue); line-height: 1.6; margin-bottom: 12px; }
 .success-box { background: var(--green-bg); border: 1px solid rgba(30,122,74,0.2); border-radius: 12px; padding: 13px 16px; font-size: 13px; color: var(--green); line-height: 1.6; margin-bottom: 12px; }
 .error-box { background: var(--red-bg); border: 1px solid rgba(192,57,43,0.2); border-radius: 12px; padding: 13px 16px; font-size: 13px; color: var(--red); line-height: 1.6; margin-bottom: 12px; }
+.error-msg { color: var(--red); font-size: 13px; margin-top: 6px; text-align: center; min-height: 18px; }
 
 .loading-screen { text-align: center; padding: 60px 20px; }
 .loading-spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
 .loading-msg { font-size: 14px; color: var(--muted); }
 .loading-sub { font-size: 12px; color: var(--muted2); margin-top: 6px; }
-
-.quiz-item {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 0; border-bottom: 1px solid var(--border);
-}
-.quiz-item:last-child { border-bottom: none; }
-.quiz-name { font-size: 14px; font-weight: 500; }
-.quiz-count { font-size: 12px; color: var(--muted); margin-top: 3px; }
-.quiz-badge { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 7px; background: var(--green-bg); color: var(--green); }
-
-.error-msg { color: var(--red); font-size: 13px; margin-top: 6px; text-align: center; min-height: 18px; }
 
 .steps { display: flex; align-items: center; margin-bottom: 20px; padding: 0 4px; }
 .step { flex: 1; text-align: center; font-size: 11px; font-weight: 600; color: var(--muted2); }
@@ -156,6 +126,73 @@ select.input { cursor: pointer; }
 .step.active .step-dot { background: var(--accent); color: white; }
 .step.done .step-dot { background: var(--green); color: white; }
 .step-line { height: 2px; background: var(--border); flex: 1; margin-top: -17px; position: relative; z-index: -1; }
+
+/* ── 답안 입력 ── */
+.answer-item {
+  border: 1.5px solid var(--border); border-radius: 12px;
+  padding: 12px 14px; margin-bottom: 8px; background: var(--white);
+  transition: border-color 0.2s;
+}
+.answer-item.active { border-color: var(--accent); }
+.answer-item-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.answer-num {
+  font-family: 'DM Mono', monospace; font-weight: 700; font-size: 13px;
+  background: var(--accent); color: white; width: 28px; height: 28px;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.answer-type { font-size: 11px; color: var(--muted); font-weight: 600; }
+
+/* 객관식 버튼 */
+.choice-btns { display: flex; gap: 8px; }
+.choice-btn {
+  flex: 1; padding: 10px 4px; border-radius: 10px; border: 2px solid var(--border);
+  font-size: 16px; font-weight: 700; cursor: pointer; background: var(--bg);
+  color: var(--text); font-family: 'DM Mono', monospace; transition: all 0.15s;
+}
+.choice-btn.selected { border-color: var(--accent); background: var(--accent); color: white; }
+.choice-btn:active { transform: scale(0.95); }
+
+/* 주관식 입력 */
+.subjective-input {
+  width: 100%; background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: 10px; padding: 12px 14px;
+  font-family: 'DM Mono', monospace; font-size: 16px; color: var(--text);
+  outline: none; transition: border-color 0.2s;
+}
+.subjective-input:focus { border-color: var(--accent); }
+.input-hint { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+/* 선생님 채점 요청 버튼 */
+.teacher-req-btn {
+  width: 100%; padding: 8px; border-radius: 8px; border: 1.5px dashed var(--blue);
+  font-size: 12px; font-weight: 600; cursor: pointer; background: transparent;
+  color: var(--blue); font-family: 'Noto Sans KR', sans-serif; margin-top: 6px;
+  transition: all 0.15s;
+}
+.teacher-req-btn.active { background: var(--blue-bg); }
+.teacher-req-btn:active { transform: scale(0.98); }
+
+/* 결과 수정 버튼 */
+.edit-btn {
+  padding: 4px 10px; border-radius: 6px; border: 1.5px solid var(--border);
+  font-size: 11px; cursor: pointer; background: transparent; color: var(--muted);
+  font-family: 'Noto Sans KR', sans-serif; white-space: nowrap;
+}
+.edit-btn:active { background: var(--bg); }
+
+/* 퀴즈 목록 */
+.quiz-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 0; border-bottom: 1px solid var(--border);
+}
+.quiz-item:last-child { border-bottom: none; }
+.quiz-name { font-size: 14px; font-weight: 500; }
+.quiz-count { font-size: 12px; color: var(--muted); margin-top: 3px; }
+.quiz-badge { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 7px; background: var(--green-bg); color: var(--green); }
+
+/* 진행률 바 */
+.progress-bar-wrap { background: var(--border); border-radius: 4px; height: 4px; margin-bottom: 16px; }
+.progress-bar { background: var(--accent); border-radius: 4px; height: 4px; transition: width 0.3s; }
 </style>
 </head>
 <body>
@@ -172,13 +209,13 @@ select.input { cursor: pointer; }
 
 <main>
 
-<!-- 학생 STEP1 -->
+<!-- ── 학생 STEP1: 정보입력 ── -->
 <div class="view active" id="v-student-select">
   <div style="height:16px"></div>
   <div class="steps">
     <div class="step active"><div class="step-dot">1</div><div>정보입력</div></div>
     <div class="step-line"></div>
-    <div class="step"><div class="step-dot">2</div><div>사진업로드</div></div>
+    <div class="step"><div class="step-dot">2</div><div>답안입력</div></div>
     <div class="step-line"></div>
     <div class="step"><div class="step-dot">3</div><div>결과</div></div>
   </div>
@@ -193,57 +230,37 @@ select.input { cursor: pointer; }
     <input class="input" type="text" id="s-name" placeholder="이름 입력" maxlength="10" autocomplete="off">
   </div>
   <div id="s-select-err" class="error-msg"></div>
-  <button class="btn btn-primary" onclick="sGoToUpload()">다음 →</button>
+  <button class="btn btn-primary" onclick="sGoToInput()">다음 →</button>
 </div>
 
-<!-- 학생 STEP2 -->
-<div class="view" id="v-student-upload">
+<!-- ── 학생 STEP2: 답안 입력 ── -->
+<div class="view" id="v-student-input">
   <div style="height:16px"></div>
   <div class="steps">
     <div class="step done"><div class="step-dot">✓</div><div>정보입력</div></div>
     <div class="step-line"></div>
-    <div class="step active"><div class="step-dot">2</div><div>사진업로드</div></div>
+    <div class="step active"><div class="step-dot">2</div><div>답안입력</div></div>
     <div class="step-line"></div>
     <div class="step"><div class="step-dot">3</div><div>결과</div></div>
   </div>
-  <div class="info-box" id="s-upload-info"></div>
-  <div class="card">
-    <div class="card-title">답안지 사진</div>
-    <div class="upload-zone" id="s-upload-zone">
-      <input type="file" id="s-file" accept="image/*" onchange="sOnFile(event)">
-      <span class="upload-icon">📷</span>
-      <div class="upload-label">답안지 사진 찍기</div>
-      <div class="upload-sub">번호별로 쓴 답안지를 찍어주세요</div>
-    </div>
-    <div class="preview-wrap" id="s-preview-wrap">
-      <img class="preview-img" id="s-preview-img" src="" alt="">
-      <button class="preview-change" onclick="sResetPhoto()">↩ 다시 찍기</button>
-    </div>
-  </div>
-  <div id="s-upload-err" class="error-msg"></div>
-  <button class="btn btn-primary" id="s-grade-btn" onclick="sStartGrading()">
+  <div class="info-box" id="s-input-info"></div>
+  <div class="progress-bar-wrap"><div class="progress-bar" id="s-progress" style="width:0%"></div></div>
+  <div id="s-answer-list"></div>
+  <div id="s-input-err" class="error-msg"></div>
+  <button class="btn btn-primary" onclick="sSubmitAnswers()">
     <div class="spinner"></div>
     <span class="btn-text">✦ 채점하기</span>
   </button>
   <button class="btn btn-outline" onclick="showView('v-student-select')" style="margin-top:8px">← 뒤로</button>
 </div>
 
-<!-- 학생 로딩 -->
-<div class="view" id="v-student-loading">
-  <div class="loading-screen">
-    <div class="loading-spinner"></div>
-    <div class="loading-msg">AI가 답안지를 읽고 있어요...</div>
-    <div class="loading-sub">잠깐만 기다려주세요 (10~20초)</div>
-  </div>
-</div>
-
-<!-- 학생 STEP3: 결과 -->
+<!-- ── 학생 STEP3: 결과 ── -->
 <div class="view" id="v-student-result">
   <div style="height:16px"></div>
   <div class="steps">
     <div class="step done"><div class="step-dot">✓</div><div>정보입력</div></div>
     <div class="step-line"></div>
-    <div class="step done"><div class="step-dot">✓</div><div>사진업로드</div></div>
+    <div class="step done"><div class="step-dot">✓</div><div>답안입력</div></div>
     <div class="step-line"></div>
     <div class="step active"><div class="step-dot">3</div><div>결과</div></div>
   </div>
@@ -256,6 +273,18 @@ select.input { cursor: pointer; }
     <div class="score-sub" id="r-fraction"></div>
   </div>
   <div id="r-wrong-wrap"></div>
+
+  <!-- 답안 수정 섹션 -->
+  <div class="card" id="r-edit-wrap" style="display:none">
+    <div class="card-title">✏️ 답안 수정</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:12px">잘못 입력한 번호를 수정하고 재채점하세요</div>
+    <div id="r-edit-list"></div>
+    <button class="btn btn-yellow" onclick="sRegrade()" style="margin-top:8px">
+      <div class="spinner"></div>
+      <span class="btn-text">↺ 재채점하기</span>
+    </button>
+  </div>
+
   <div class="card">
     <div class="card-title">문제별 결과</div>
     <div id="r-detail"></div>
@@ -264,45 +293,39 @@ select.input { cursor: pointer; }
   <button class="btn btn-primary" onclick="sReset()" style="margin-top:8px">처음으로</button>
 </div>
 
-
-<!-- 선생님 VIEW -->
+<!-- ── 선생님 VIEW ── -->
 <div class="view" id="v-teacher-main">
   <div style="height:16px"></div>
-
   <div class="card">
     <div class="card-title">등록된 시험지</div>
     <div id="t-quiz-list">
       <div style="text-align:center;padding:20px;color:var(--muted);font-size:13px">불러오는 중...</div>
     </div>
   </div>
-
   <div class="card">
     <div class="card-title">📄 PDF로 정답 등록</div>
     <div style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.6">
       답지 PDF를 올리면 AI가 읽어서 자동으로 정답을 등록해요.
     </div>
-
     <div style="margin-bottom:10px">
-      <div style="font-size:12px;color:var(--muted);margin-bottom:6px">시험지 ID (영문/숫자)</div>
-      <input class="input" type="text" id="t-quiz-id" placeholder="예: M31기본" autocomplete="off">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:6px">시험지 ID</div>
+      <input class="input" type="text" id="t-quiz-id" placeholder="예: 공통수학I_1-2_(K1)" autocomplete="off">
     </div>
     <div style="margin-bottom:10px">
       <div style="font-size:12px;color:var(--muted);margin-bottom:6px">시험지 이름</div>
-      <input class="input" type="text" id="t-quiz-name" placeholder="예: M3.1 (기본) 100문제" autocomplete="off">
+      <input class="input" type="text" id="t-quiz-name" placeholder="예: 공통수학I 1-2 K1" autocomplete="off">
     </div>
     <div style="margin-bottom:10px">
       <div style="font-size:12px;color:var(--muted);margin-bottom:6px">문제 수</div>
-      <input class="input" type="number" id="t-quiz-count" placeholder="예: 100" min="1" max="200">
+      <input class="input" type="number" id="t-quiz-count" placeholder="예: 54" min="1" max="200">
     </div>
-
-    <div class="upload-zone" id="t-upload-zone">
-      <input type="file" id="t-pdf-file" accept="application/pdf,image/*" onchange="tOnFile(event)">
-      <span class="upload-icon">📎</span>
-      <div class="upload-label">답지 PDF 또는 사진 올리기</div>
-      <div class="upload-sub">답지 파일을 선택해주세요</div>
+    <div class="upload-zone" id="t-upload-zone" style="border:2px dashed var(--border);border-radius:14px;background:var(--bg);padding:24px;text-align:center;cursor:pointer;position:relative;overflow:hidden;">
+      <input type="file" id="t-pdf-file" accept="application/pdf,image/*" onchange="tOnFile(event)" style="position:absolute;inset:0;opacity:0;cursor:pointer;">
+      <div style="font-size:2rem;margin-bottom:8px">📎</div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:4px">답지 PDF 또는 사진 올리기</div>
+      <div style="font-size:12px;color:var(--muted)">파일을 선택해주세요</div>
     </div>
     <div id="t-file-name" style="font-size:13px;color:var(--green);margin-top:8px;display:none"></div>
-
     <div id="t-upload-msg"></div>
     <button class="btn btn-green" id="t-register-btn" onclick="tRegisterQuiz()">
       <div class="spinner"></div>
@@ -318,16 +341,17 @@ var WORKERS_URL = 'https://restless-queen-374b.yimdw0330.workers.dev';
 var GAS_URL = 'https://script.google.com/macros/s/AKfycbyMnbbiat1wf77YHc3iYqzfT-MuEb_-BR7VYismnNDSBFn1mY4deohvRMbl58AN6t-t/exec';
 
 var sState = {
-  quizId: '', quizName: '', problems: [],
-  studentName: '', imageBase64: null, imageType: 'image/jpeg'
+  quizId: '', quizName: '', problems: [], studentName: '',
+  answers: {}, teacherRequested: new Set()
 };
-var tState = { fileBase64: null, fileType: null, fileName: null };
+var tState = { fileBase64: null, fileType: null };
 var currentMode = 'student';
 
+// ── 모드 전환 ──
 function switchMode(mode) {
   currentMode = mode;
   document.querySelectorAll('.mode-tab').forEach(function(t, i) {
-    t.classList.toggle('active', (mode==='student' && i===0) || (mode==='teacher' && i===1));
+    t.classList.toggle('active', (mode==='student'&&i===0)||(mode==='teacher'&&i===1));
   });
   if (mode === 'student') {
     showView('v-student-select');
@@ -346,61 +370,46 @@ function showView(id) {
   window.scrollTo(0, 0);
 }
 
+// ── 시험지 목록 ──
 function loadQuizList(selectId) {
   var sel = document.getElementById(selectId);
   sel.innerHTML = '<option value="">불러오는 중...</option>';
-
-  fetch(GAS_URL, {
-    method: 'POST',
-    body: JSON.stringify({ action: 'getQuizList' })
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(data) {
+  fetch(GAS_URL, { method:'POST', body:JSON.stringify({action:'getQuizList'}) })
+  .then(function(r){return r.json();})
+  .then(function(data){
     if (data.success && data.list.length > 0) {
       sel.innerHTML = '<option value="">시험지를 선택하세요</option>';
-      data.list.forEach(function(q) {
-        sel.innerHTML += '<option value="' + q.id + '">' + q.name + ' (' + q.count + '문제)</option>';
+      data.list.forEach(function(q){
+        sel.innerHTML += '<option value="'+q.id+'">'+q.name+' ('+q.count+'문제)</option>';
       });
     } else {
       sel.innerHTML = '<option value="">등록된 시험지가 없습니다</option>';
     }
-  })
-  .catch(function() {
-    sel.innerHTML = '<option value="">불러오기 실패 - 새로고침 해주세요</option>';
-  });
+  }).catch(function(){ sel.innerHTML = '<option value="">불러오기 실패</option>'; });
 }
 
 function loadTeacherQuizList() {
   var container = document.getElementById('t-quiz-list');
   container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px">불러오는 중...</div>';
-
-  fetch(GAS_URL, {
-    method: 'POST',
-    body: JSON.stringify({ action: 'getQuizList' })
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(data) {
+  fetch(GAS_URL, { method:'POST', body:JSON.stringify({action:'getQuizList'}) })
+  .then(function(r){return r.json();})
+  .then(function(data){
     if (data.success && data.list.length > 0) {
       container.innerHTML = '';
-      data.list.forEach(function(q) {
+      data.list.forEach(function(q){
         var item = document.createElement('div');
         item.className = 'quiz-item';
-        item.innerHTML =
-          '<div><div class="quiz-name">' + q.name + '</div>' +
-          '<div class="quiz-count">' + q.count + '문제 · ID: ' + q.id + '</div></div>' +
-          '<div class="quiz-badge">등록됨</div>';
+        item.innerHTML = '<div><div class="quiz-name">'+q.name+'</div><div class="quiz-count">'+q.count+'문제</div></div><div class="quiz-badge">등록됨</div>';
         container.appendChild(item);
       });
     } else {
-      container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px">등록된 시험지가 없어요.<br>아래에서 PDF를 올려 등록해주세요!</div>';
+      container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px">등록된 시험지가 없어요.</div>';
     }
-  })
-  .catch(function() {
-    container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--red);font-size:13px">불러오기 실패</div>';
-  });
+  }).catch(function(){ container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--red);font-size:13px">불러오기 실패</div>'; });
 }
 
-function sGoToUpload() {
+// ── 학생 STEP1 → STEP2 ──
+function sGoToInput() {
   var quizId = document.getElementById('s-quiz-select').value;
   var name = document.getElementById('s-name').value.trim();
   var err = document.getElementById('s-select-err');
@@ -410,230 +419,294 @@ function sGoToUpload() {
 
   sState.quizId = quizId;
   sState.studentName = name;
+  sState.answers = {};
+  sState.teacherRequested = new Set();
 
-  fetch(GAS_URL, {
-    method: 'POST',
-    body: JSON.stringify({ action: 'getAnswers', quizId: quizId })
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(data) {
+  fetch(GAS_URL, { method:'POST', body:JSON.stringify({action:'getAnswers', quizId:quizId}) })
+  .then(function(r){return r.json();})
+  .then(function(data){
     if (!data.success || data.problems.length === 0) {
-      err.textContent = '정답 데이터를 불러오지 못했습니다.';
-      return;
+      err.textContent = '정답 데이터를 불러오지 못했습니다.'; return;
     }
     sState.problems = data.problems;
-    var quizName = document.getElementById('s-quiz-select').options[document.getElementById('s-quiz-select').selectedIndex].text;
-    sState.quizName = quizName;
+    var sel = document.getElementById('s-quiz-select');
+    sState.quizName = sel.options[sel.selectedIndex].text;
 
-    var auto = data.problems.filter(function(p) { return p.type !== '서술형'; }).length;
-    var teacher = data.problems.filter(function(p) { return p.type === '서술형'; }).length;
-    document.getElementById('s-upload-info').innerHTML =
-      '<strong>' + quizName + '</strong> · ' + name + ' 학생<br>자동채점 ' + auto + '문제 + 선생님채점 ' + teacher + '문제';
+    document.getElementById('s-input-info').innerHTML =
+      '<strong>'+sState.quizName+'</strong> · '+name+' 학생<br>총 '+data.problems.length+'문제 — 답을 입력하고 채점하기를 눌러주세요';
+    document.getElementById('topbar-title').textContent = name+' 채점';
 
-    document.getElementById('topbar-title').textContent = name + ' 채점';
-    showView('v-student-upload');
+    buildAnswerInputs();
+    showView('v-student-input');
   })
-  .catch(function() {
-    err.textContent = '네트워크 오류가 발생했습니다.';
+  .catch(function(){ err.textContent = '네트워크 오류가 발생했습니다.'; });
+}
+
+// ── 답안 입력 폼 생성 ──
+function buildAnswerInputs() {
+  var list = document.getElementById('s-answer-list');
+  list.innerHTML = '';
+  updateProgress();
+
+  sState.problems.forEach(function(p) {
+    var div = document.createElement('div');
+    div.className = 'answer-item';
+    div.id = 'item-'+p.num;
+
+    var typeLabel = p.type === '객관식5' ? '객관식' : '주관식';
+    var headerHtml = '<div class="answer-item-header"><div class="answer-num">'+p.num+'</div><div class="answer-type">'+typeLabel+'</div></div>';
+
+    if (p.type === '객관식5') {
+      var btns = '';
+      for (var i=1; i<=5; i++) {
+        btns += '<button class="choice-btn" onclick="selectChoice('+p.num+','+i+')" id="cb-'+p.num+'-'+i+'">'+i+'</button>';
+      }
+      div.innerHTML = headerHtml + '<div class="choice-btns">'+btns+'</div>';
+    } else {
+      div.innerHTML = headerHtml +
+        '<input class="subjective-input" type="text" id="sa-'+p.num+'" placeholder="답 입력 (예: 5, -3, x^2+1)" oninput="onSubjectiveInput('+p.num+')" autocomplete="off" autocorrect="off" autocapitalize="off">' +
+        '<div class="input-hint">x² → x^2 / 분수 → 1/2 / 루트 → sqrt(2)</div>' +
+        '<button class="teacher-req-btn" id="treq-'+p.num+'" onclick="toggleTeacherReq('+p.num+')">👨‍🏫 선생님께 채점 받기</button>';
+    }
+    list.appendChild(div);
   });
 }
 
-function sOnFile(e) {
-  var file = e.target.files[0];
-  if (!file) return;
-  sState.imageType = file.type || 'image/jpeg';
-  var reader = new FileReader();
-  reader.onload = function(ev) {
-    sState.imageBase64 = ev.target.result.split(',')[1];
-    document.getElementById('s-preview-img').src = ev.target.result;
-    document.getElementById('s-upload-zone').style.display = 'none';
-    document.getElementById('s-preview-wrap').style.display = 'block';
-  };
-  reader.readAsDataURL(file);
+function selectChoice(num, val) {
+  sState.answers[num] = String(val);
+  for (var i=1; i<=5; i++) {
+    var btn = document.getElementById('cb-'+num+'-'+i);
+    if (btn) btn.classList.toggle('selected', i === val);
+  }
+  updateProgress();
 }
 
-function sResetPhoto() {
-  sState.imageBase64 = null;
-  document.getElementById('s-file').value = '';
-  document.getElementById('s-upload-zone').style.display = 'block';
-  document.getElementById('s-preview-wrap').style.display = 'none';
-}
-
-async function sStartGrading() {
-  var err = document.getElementById('s-upload-err');
-  if (!sState.imageBase64) { err.textContent = '사진을 먼저 올려주세요.'; return; }
-  err.textContent = '';
-  showView('v-student-loading');
-
-  try {
-    var extracted = await extractFromPhoto(sState.imageBase64, sState.imageType, sState.problems);
-    var result = gradeAnswers(extracted);
-    await saveResultToSheets(result);
-    showResult(result);
-  } catch(e) {
-    showView('v-student-upload');
-    document.getElementById('s-upload-err').textContent = '오류: ' + e.message;
+function onSubjectiveInput(num) {
+  var el = document.getElementById('sa-'+num);
+  if (el) {
+    sState.answers[num] = el.value.trim();
+    updateProgress();
   }
 }
 
-async function extractFromPhoto(b64, mediaType, problems) {
-  var autoProblems = problems.filter(function(p) { return p.type !== '서술형'; });
-  var numList = autoProblems.map(function(p) { return p.num + '번'; }).join(', ');
+function toggleTeacherReq(num) {
+  var btn = document.getElementById('treq-'+num);
+  if (sState.teacherRequested.has(num)) {
+    sState.teacherRequested.delete(num);
+    btn.classList.remove('active');
+    btn.textContent = '👨‍🏫 선생님께 채점 받기';
+  } else {
+    sState.teacherRequested.add(num);
+    btn.classList.add('active');
+    btn.textContent = '✓ 선생님 채점 요청됨';
+    sState.answers[num] = '__teacher__';
+  }
+}
 
-  var prompt = '이 사진은 학생이 손으로 직접 쓴 수학 답안지입니다.\n' +
-    '다음 문제 번호의 학생 답을 읽어주세요: ' + numList + '\n\n' +
-    '손글씨 인식 주의사항:\n' +
-    '- 흘려 쓴 손글씨도 최대한 정확히 읽어주세요\n' +
-    '- 숫자 1과 7, 0과 6, 4와 9 혼동 주의\n' +
-    '- 수식은 그대로 읽기 (예: x²+1, -3, 1/2)\n' +
-    '- 객관식: 동그라미 친 번호 읽기 (①②③④⑤ → 1,2,3,4,5)\n' +
-    '- 취소선 있는 답은 무시하고 최종 답만 읽기\n' +
-    '- 문제 번호 옆 또는 답란에 쓴 답을 읽기\n\n' +
-    '출력 규칙:\n' +
-    '- 반드시 JSON 배열로만 응답\n' +
-    '- 형식: [{"num": 문제번호, "answer": "학생답"}, ...]\n' +
-    '- 답이 안 보이거나 비어있으면 answer를 ""\n' +
-    '- 마크다운, 코드블록 없이 JSON만 출력';
+function updateProgress() {
+  var filled = Object.keys(sState.answers).filter(function(k){ return sState.answers[k] !== ''; }).length;
+  var total = sState.problems.length;
+  var pct = total > 0 ? Math.round(filled/total*100) : 0;
+  var bar = document.getElementById('s-progress');
+  if (bar) bar.style.width = pct+'%';
+}
 
-  var response = await fetch(WORKERS_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 2000,
-      messages: [{
-        role: 'user',
-        content: [
-          { type: 'image', source: { type: 'base64', media_type: mediaType, data: b64 } },
-          { type: 'text', text: prompt }
-        ]
-      }]
-    })
+// ── 채점 ──
+function sSubmitAnswers() {
+  var err = document.getElementById('s-input-err');
+  var unanswered = sState.problems.filter(function(p){
+    return !sState.answers[p.num] || sState.answers[p.num] === '';
   });
-
-  if (!response.ok) throw new Error('서버 오류 ' + response.status);
-  var data = await response.json();
-  if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
-  if (!data.content || !Array.isArray(data.content)) throw new Error('응답 오류');
-
-  var raw = data.content.map(function(c) { return c.text || ''; }).join('');
-  var cleaned = raw.replace(/```json|```/g, '').trim();
-  var parsed = JSON.parse(cleaned);
-
-  var map = {};
-  parsed.forEach(function(item) { map[String(item.num)] = String(item.answer || '').trim(); });
-  return map;
+  if (unanswered.length > 0) {
+    err.textContent = '미입력 문제: '+unanswered.map(function(p){return p.num+'번';}).join(', ');
+    return;
+  }
+  err.textContent = '';
+  var result = gradeAnswers(sState.answers);
+  saveResultToSheets(result);
+  showResult(result);
 }
 
 function normalize(str) {
   return String(str)
-    .replace(/①/g, '1').replace(/②/g, '2').replace(/③/g, '3')
-    .replace(/④/g, '4').replace(/⑤/g, '5')
-    .replace(/\s/g, '').toLowerCase();
+    .replace(/①/g,'1').replace(/②/g,'2').replace(/③/g,'3')
+    .replace(/④/g,'4').replace(/⑤/g,'5')
+    .replace(/\^/g,'').replace(/\s/g,'').toLowerCase();
 }
 
-function gradeAnswers(extractedMap) {
-  var correct = 0, autoTotal = 0, teacherTotal = 0;
+function gradeAnswers(answersMap) {
+  var correct=0, autoTotal=0, teacherTotal=0;
   var details = [];
 
-  sState.problems.forEach(function(p) {
-    if (p.type === '서술형') {
+  sState.problems.forEach(function(p){
+    var studentAns = answersMap[p.num] || '';
+
+    if (studentAns === '__teacher__' || sState.teacherRequested.has(p.num)) {
       teacherTotal++;
-      details.push({ num: p.num, type: 'teacher', studentAns: '', correctAns: p.answer, status: 'pending' });
+      details.push({num:p.num, type:'teacher', studentAns:'선생님 채점 요청', correctAns:p.answer, status:'teacher'});
       return;
     }
+
     autoTotal++;
-    var studentAns = extractedMap[String(p.num)] || '';
     var isCorrect = normalize(studentAns) === normalize(p.answer);
     if (isCorrect) correct++;
-    details.push({ num: p.num, type: p.type, studentAns: studentAns, correctAns: p.answer, status: isCorrect ? 'correct' : 'wrong' });
+    details.push({num:p.num, type:p.type, studentAns:studentAns, correctAns:p.answer, status:isCorrect?'correct':'wrong'});
   });
 
-  var score = autoTotal > 0 ? Math.round((correct / autoTotal) * 100) : 0;
+  var score = autoTotal > 0 ? Math.round(correct/autoTotal*100) : 0;
   return {
-    quizId: sState.quizId,
-    quizName: sState.quizName,
+    quizId: sState.quizId, quizName: sState.quizName,
     studentName: sState.studentName,
-    correct: correct, autoTotal: autoTotal, teacherTotal: teacherTotal,
-    score: score, details: details
+    correct:correct, autoTotal:autoTotal, teacherTotal:teacherTotal,
+    score:score, details:details
   };
 }
 
-async function saveResultToSheets(result) {
-  try {
-    await fetch(GAS_URL, {
-      method: 'POST',
-      body: JSON.stringify({
-        action: 'saveResult',
-        quizId: result.quizId,
-        quizName: result.quizName,
-        studentName: result.studentName,
-        score: result.score,
-        correct: result.correct,
-        autoTotal: result.autoTotal,
-        teacherTotal: result.teacherTotal,
-        details: result.details
-      })
-    });
-  } catch(e) { console.log('저장 실패:', e); }
-}
-
+// ── 결과 표시 ──
 function showResult(r) {
   document.getElementById('r-score').textContent = r.score;
-  document.getElementById('r-name').textContent = r.studentName + ' 학생';
-  document.getElementById('r-fraction').textContent = '자동채점 ' + r.correct + '/' + r.autoTotal + '  |  선생님채점 ' + r.teacherTotal + '문제';
+  document.getElementById('r-name').textContent = r.studentName+' 학생';
+  document.getElementById('r-fraction').textContent = '자동채점 '+r.correct+'/'+r.autoTotal+'  |  선생님채점 '+r.teacherTotal+'문제';
 
-  var wrongNums = r.details.filter(function(d) { return d.status === 'wrong'; }).map(function(d) { return d.num + '번'; });
+  var wrongNums = r.details.filter(function(d){return d.status==='wrong';}).map(function(d){return d.num+'번';});
   var wrongWrap = document.getElementById('r-wrong-wrap');
   wrongWrap.innerHTML = wrongNums.length > 0
-    ? '<div class="wrong-summary"><div class="wrong-title">❌ 틀린 문제 (' + wrongNums.length + '개)</div><div class="wrong-nums">' + wrongNums.join('  ·  ') + '</div></div>'
+    ? '<div class="wrong-summary"><div class="wrong-title">❌ 틀린 문제 ('+wrongNums.length+'개)</div><div class="wrong-nums">'+wrongNums.join('  ·  ')+'</div></div>'
     : '<div class="wrong-summary" style="background:var(--green-bg);border-color:rgba(30,122,74,0.2)"><div class="wrong-title" style="color:var(--green)">🎉 모두 맞았어요!</div></div>';
 
+  // 답안 수정 섹션
+  var editWrap = document.getElementById('r-edit-wrap');
+  var editList = document.getElementById('r-edit-list');
+  editList.innerHTML = '';
+
+  r.details.forEach(function(d){
+    if (d.status === 'teacher') return;
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);gap:8px;';
+
+    var numSpan = '<span style="font-family:DM Mono,monospace;font-size:13px;color:var(--muted);min-width:34px">'+d.num+'번</span>';
+    var badge = d.status==='correct'
+      ? '<span class="rbadge badge-o">✓</span>'
+      : '<span class="rbadge badge-x">✗</span>';
+
+    if (sState.problems.find(function(p){return p.num==d.num && p.type==='객관식5';})) {
+      var btnsHtml = '';
+      for (var i=1; i<=5; i++) {
+        var sel = String(d.studentAns)===String(i) ? 'style="background:var(--accent);color:white;border-color:var(--accent)"' : '';
+        btnsHtml += '<button '+sel+' style="padding:6px 10px;border-radius:6px;border:1.5px solid var(--border);cursor:pointer;font-weight:700;font-size:13px;background:var(--bg)" onclick="editChoice('+d.num+','+i+',this)">'+i+'</button>';
+      }
+      row.innerHTML = numSpan+'<div style="display:flex;gap:4px;flex:1">'+btnsHtml+'</div>'+badge;
+    } else {
+      row.innerHTML = numSpan+
+        '<input type="text" value="'+d.studentAns+'" id="edit-'+d.num+'" style="flex:1;padding:6px 10px;border-radius:8px;border:1.5px solid var(--border);font-size:14px;font-family:DM Mono,monospace;outline:none;" autocomplete="off">'+
+        badge;
+    }
+    editList.appendChild(row);
+  });
+
+  editWrap.style.display = 'block';
+
+  // 문제별 결과
   var detail = document.getElementById('r-detail');
   detail.innerHTML = '';
-  r.details.forEach(function(d) {
+  r.details.forEach(function(d){
     var row = document.createElement('div');
     row.className = 'result-row';
-    if (d.status === 'pending') {
-      row.innerHTML = '<div class="rnum">' + d.num + '번</div><div class="rcontent"><div class="rstudent">서술형</div></div><div class="rbadge badge-pending">채점대기</div>';
+    if (d.status === 'teacher') {
+      row.innerHTML = '<div class="rnum">'+d.num+'번</div><div class="rcontent"><div class="rstudent">선생님 채점 요청</div></div><div class="rbadge badge-teacher">채점대기</div>';
     } else if (d.status === 'correct') {
-      row.innerHTML = '<div class="rnum">' + d.num + '번</div><div class="rcontent"><div class="rstudent">내 답: ' + (d.studentAns || '(미기재)') + '</div></div><div class="rbadge badge-o">✓</div>';
+      row.innerHTML = '<div class="rnum">'+d.num+'번</div><div class="rcontent"><div class="rstudent">내 답: '+d.studentAns+'</div></div><div class="rbadge badge-o">✓</div>';
     } else {
-      // ★ 틀린 경우: 정답 표시 안 함
-      row.innerHTML = '<div class="rnum">' + d.num + '번</div><div class="rcontent"><div class="rstudent">내 답: ' + (d.studentAns || '(미기재)') + '</div></div><div class="rbadge badge-x">✗</div>';
+      row.innerHTML = '<div class="rnum">'+d.num+'번</div><div class="rcontent"><div class="rstudent">내 답: '+(d.studentAns||'(미입력)')+'</div></div><div class="rbadge badge-x">✗</div>';
     }
     detail.appendChild(row);
   });
 
-  var teacherNums = r.details.filter(function(d) { return d.status === 'pending'; }).map(function(d) { return d.num + '번'; });
+  var teacherNums = r.details.filter(function(d){return d.status==='teacher';}).map(function(d){return d.num+'번';});
   var tw = document.getElementById('r-teacher-wrap');
   tw.innerHTML = teacherNums.length > 0
-    ? '<div class="card" style="margin-top:0"><div class="card-title">선생님 채점 대기</div><div style="font-size:13px;color:var(--muted);line-height:1.8">' + teacherNums.join(', ') + '</div></div>'
+    ? '<div class="card" style="margin-top:0"><div class="card-title">선생님 채점 대기</div><div style="font-size:13px;color:var(--muted);line-height:1.8">'+teacherNums.join(', ')+'</div></div>'
     : '';
 
   showView('v-student-result');
 }
 
+function editChoice(num, val, btn) {
+  var parent = btn.parentNode;
+  parent.querySelectorAll('button').forEach(function(b){
+    b.style.background = 'var(--bg)';
+    b.style.color = 'var(--text)';
+    b.style.borderColor = 'var(--border)';
+  });
+  btn.style.background = 'var(--accent)';
+  btn.style.color = 'white';
+  btn.style.borderColor = 'var(--accent)';
+}
+
+// ── 재채점 ──
+function sRegrade() {
+  var newAnswers = Object.assign({}, sState.answers);
+  sState.problems.forEach(function(p){
+    if (sState.teacherRequested.has(p.num)) return;
+    if (p.type === '객관식5') {
+      var parent = document.querySelector('#r-edit-list [onclick*="editChoice('+p.num+',"]')
+        || document.querySelector('#r-edit-list');
+      // 객관식 선택값 읽기
+      var btns = document.querySelectorAll('[onclick*="editChoice('+p.num+',"]');
+      btns.forEach(function(b){
+        if (b.style.background.includes('1a1a1a') || b.style.background === 'var(--accent)' || b.style.background === 'rgb(26, 26, 26)') {
+          var match = b.getAttribute('onclick').match(/editChoice\(\d+,(\d+)/);
+          if (match) newAnswers[p.num] = match[1];
+        }
+      });
+    } else {
+      var el = document.getElementById('edit-'+p.num);
+      if (el) newAnswers[p.num] = el.value.trim();
+    }
+  });
+
+  sState.answers = newAnswers;
+  var result = gradeAnswers(newAnswers);
+  saveResultToSheets(result);
+  showResult(result);
+}
+
+// ── Sheets 저장 ──
+function saveResultToSheets(result) {
+  try {
+    fetch(GAS_URL, {
+      method:'POST',
+      body:JSON.stringify({
+        action:'saveResult',
+        quizId:result.quizId, quizName:result.quizName,
+        studentName:result.studentName, score:result.score,
+        correct:result.correct, autoTotal:result.autoTotal,
+        teacherTotal:result.teacherTotal, details:result.details
+      })
+    });
+  } catch(e) { console.log('저장 실패:', e); }
+}
+
+// ── 리셋 ──
 function sReset() {
-  sState.quizId = ''; sState.studentName = ''; sState.problems = [];
-  sState.imageBase64 = null;
-  document.getElementById('s-name').value = '';
-  document.getElementById('s-select-err').textContent = '';
-  sResetPhoto();
-  document.getElementById('topbar-title').textContent = '학생 채점';
+  sState.quizId=''; sState.studentName=''; sState.problems=[];
+  sState.answers={}; sState.teacherRequested=new Set();
+  document.getElementById('s-name').value='';
+  document.getElementById('s-select-err').textContent='';
+  document.getElementById('topbar-title').textContent='학생 채점';
   showView('v-student-select');
 }
 
+// ── 선생님: PDF 등록 ──
 function tOnFile(e) {
   var file = e.target.files[0];
   if (!file) return;
   tState.fileType = file.type;
-  tState.fileName = file.name;
   var reader = new FileReader();
-  reader.onload = function(ev) {
+  reader.onload = function(ev){
     tState.fileBase64 = ev.target.result.split(',')[1];
     var fn = document.getElementById('t-file-name');
-    fn.textContent = '✓ ' + file.name;
+    fn.textContent = '✓ '+file.name;
     fn.style.display = 'block';
   };
   reader.readAsDataURL(file);
@@ -646,90 +719,48 @@ async function tRegisterQuiz() {
   var msgEl = document.getElementById('t-upload-msg');
   var btn = document.getElementById('t-register-btn');
 
-  if (!quizId) { msgEl.innerHTML = '<div class="error-box">시험지 ID를 입력해주세요.</div>'; return; }
-  if (!quizName) { msgEl.innerHTML = '<div class="error-box">시험지 이름을 입력해주세요.</div>'; return; }
-  if (!quizCount || quizCount < 1) { msgEl.innerHTML = '<div class="error-box">문제 수를 입력해주세요.</div>'; return; }
-  if (!tState.fileBase64) { msgEl.innerHTML = '<div class="error-box">파일을 올려주세요.</div>'; return; }
+  if (!quizId) { msgEl.innerHTML='<div class="error-box">시험지 ID를 입력해주세요.</div>'; return; }
+  if (!quizName) { msgEl.innerHTML='<div class="error-box">시험지 이름을 입력해주세요.</div>'; return; }
+  if (!quizCount||quizCount<1) { msgEl.innerHTML='<div class="error-box">문제 수를 입력해주세요.</div>'; return; }
+  if (!tState.fileBase64) { msgEl.innerHTML='<div class="error-box">파일을 올려주세요.</div>'; return; }
 
-  btn.disabled = true; btn.classList.add('loading');
-  msgEl.innerHTML = '<div class="info-box">AI가 답지를 읽고 있어요... (10~30초)</div>';
+  btn.disabled=true; btn.classList.add('loading');
+  msgEl.innerHTML='<div class="info-box">AI가 답지를 읽고 있어요... (10~30초)</div>';
 
   try {
-    var problems = await extractAnswersFromFile(tState.fileBase64, tState.fileType, quizCount);
-    var saveRes = await fetch(GAS_URL, {
-      method: 'POST',
-      body: JSON.stringify({
-        action: 'saveQuiz',
-        quizId: quizId,
-        quizName: quizName,
-        problems: problems
-      })
-    });
-    var saveData = await saveRes.json();
+    var mediaType = tState.fileType==='application/pdf' ? 'application/pdf' : (tState.fileType||'image/jpeg');
+    var contentArr = mediaType==='application/pdf'
+      ? [{type:'document',source:{type:'base64',media_type:'application/pdf',data:tState.fileBase64}},{type:'text',text:getExtractPrompt(quizCount)}]
+      : [{type:'image',source:{type:'base64',media_type:mediaType,data:tState.fileBase64}},{type:'text',text:getExtractPrompt(quizCount)}];
 
+    var response = await fetch(WORKERS_URL, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:4000,messages:[{role:'user',content:contentArr}]})
+    });
+    var data = await response.json();
+    var raw = data.content.map(function(c){return c.text||'';}).join('');
+    var cleaned = raw.replace(/```json|```/g,'').trim();
+    var problems = JSON.parse(cleaned);
+
+    var saveRes = await fetch(GAS_URL, {method:'POST',body:JSON.stringify({action:'saveQuiz',quizId:quizId,quizName:quizName,problems:problems})});
+    var saveData = await saveRes.json();
     if (saveData.success) {
-      msgEl.innerHTML = '<div class="success-box">✓ ' + saveData.message + '</div>';
-      loadTeacherQuizList();
-      loadQuizList('s-quiz-select');
+      msgEl.innerHTML='<div class="success-box">✓ '+saveData.message+'</div>';
+      loadTeacherQuizList(); loadQuizList('s-quiz-select');
     } else {
-      msgEl.innerHTML = '<div class="error-box">저장 실패: ' + (saveData.message || '오류') + '</div>';
+      msgEl.innerHTML='<div class="error-box">저장 실패: '+(saveData.message||'오류')+'</div>';
     }
   } catch(e) {
-    msgEl.innerHTML = '<div class="error-box">오류: ' + e.message + '</div>';
+    msgEl.innerHTML='<div class="error-box">오류: '+e.message+'</div>';
   }
-
-  btn.disabled = false; btn.classList.remove('loading');
+  btn.disabled=false; btn.classList.remove('loading');
 }
 
-async function extractAnswersFromFile(b64, fileType, count) {
-  var mediaType = fileType === 'application/pdf' ? 'application/pdf' : (fileType || 'image/jpeg');
-
-  var prompt = '이 파일은 수학 답지입니다.\n' +
-    '1번부터 ' + count + '번까지 각 문제의 정답을 추출해주세요.\n\n' +
-    '규칙:\n' +
-    '- 반드시 JSON 배열로만 응답\n' +
-    '- 형식: [{"num": 문제번호, "type": "문제유형", "answer": "정답"}, ...]\n' +
-    '- type은 다음 중 하나: "객관식5"(①②③④⑤ 중 선택), "단답형"(숫자/간단식), "서술형"(풀이필요)\n' +
-    '- 객관식 정답은 번호만: "1","2","3","4","5"\n' +
-    '- 마크다운, 코드블록 없이 JSON만 출력\n' +
-    '- 정답이 없거나 서술형이면 type을 "서술형"으로';
-
-  var contentArr;
-  if (mediaType === 'application/pdf') {
-    contentArr = [
-      { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: b64 } },
-      { type: 'text', text: prompt }
-    ];
-  } else {
-    contentArr = [
-      { type: 'image', source: { type: 'base64', media_type: mediaType, data: b64 } },
-      { type: 'text', text: prompt }
-    ];
-  }
-
-  var response = await fetch(WORKERS_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 4000,
-      messages: [{ role: 'user', content: contentArr }]
-    })
-  });
-
-  if (!response.ok) throw new Error('서버 오류 ' + response.status);
-  var data = await response.json();
-  if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
-  if (!data.content || !Array.isArray(data.content)) throw new Error('응답 오류');
-
-  var raw = data.content.map(function(c) { return c.text || ''; }).join('');
-  var cleaned = raw.replace(/```json|```/g, '').trim();
-  return JSON.parse(cleaned);
+function getExtractPrompt(count) {
+  return '이 파일은 수학 답지입니다.\n1번부터 '+count+'번까지 각 문제의 정답을 추출해주세요.\n\n규칙:\n- 반드시 JSON 배열로만 응답\n- 형식: [{"num": 문제번호, "type": "문제유형", "answer": "정답"}, ...]\n- type: "객관식5"(①~⑤) 또는 "단답형"\n- 객관식 정답은 번호만: "1","2","3","4","5"\n- 마크다운, 코드블록 없이 JSON만 출력';
 }
 
-window.onload = function() {
-  loadQuizList('s-quiz-select');
-};
+window.onload = function(){ loadQuizList('s-quiz-select'); };
 </script>
 </body>
 </html>
