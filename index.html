@@ -346,14 +346,22 @@ select.input { cursor: pointer; }
   <div style="height:16px"></div>
 
   <!-- 탭 메뉴 -->
-  <div style="display:flex;gap:8px;margin-bottom:16px">
-    <button onclick="tTab('results')" id="ttab-results" style="flex:1;padding:10px;border-radius:10px;border:1.5px solid var(--accent);background:var(--accent);color:white;font-weight:700;font-size:13px;cursor:pointer;font-family:Noto Sans KR,sans-serif">📊 채점결과</button>
-    <button onclick="tTab('answers')" id="ttab-answers" style="flex:1;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:transparent;color:var(--muted);font-weight:700;font-size:13px;cursor:pointer;font-family:Noto Sans KR,sans-serif">✏️ 정답수정</button>
-    <button onclick="tTab('register')" id="ttab-register" style="flex:1;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:transparent;color:var(--muted);font-weight:700;font-size:13px;cursor:pointer;font-family:Noto Sans KR,sans-serif">📄 등록</button>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:16px">
+    <button onclick="tTab('pending')" id="ttab-pending" style="padding:10px;border-radius:10px;border:1.5px solid var(--accent);background:var(--accent);color:white;font-weight:700;font-size:12px;cursor:pointer;font-family:Noto Sans KR,sans-serif">👨‍🏫 채점대기</button>
+    <button onclick="tTab('results')" id="ttab-results" style="padding:10px;border-radius:10px;border:1.5px solid var(--border);background:transparent;color:var(--muted);font-weight:700;font-size:12px;cursor:pointer;font-family:Noto Sans KR,sans-serif">📊 채점결과</button>
+    <button onclick="tTab('answers')" id="ttab-answers" style="padding:10px;border-radius:10px;border:1.5px solid var(--border);background:transparent;color:var(--muted);font-weight:700;font-size:12px;cursor:pointer;font-family:Noto Sans KR,sans-serif">✏️ 정답수정</button>
+    <button onclick="tTab('register')" id="ttab-register" style="padding:10px;border-radius:10px;border:1.5px solid var(--border);background:transparent;color:var(--muted);font-weight:700;font-size:12px;cursor:pointer;font-family:Noto Sans KR,sans-serif">📄 등록</button>
+  </div>
+
+  <!-- 채점대기 탭 -->
+  <div id="t-tab-pending">
+    <div id="t-pending-list">
+      <div style="text-align:center;padding:30px;color:var(--muted);font-size:13px">불러오는 중...</div>
+    </div>
   </div>
 
   <!-- 채점결과 탭 -->
-  <div id="t-tab-results">
+  <div id="t-tab-results" style="display:none">
     <div class="card">
       <div class="card-title">시험지 선택</div>
       <select class="input" id="t-result-quiz" onchange="tLoadResults()">
@@ -471,7 +479,7 @@ function tLogout() {
 function tInitMain() {
   loadQuizList('s-quiz-select');
   tLoadQuizOptions();
-  tLoadResults();
+  tLoadPending();
 }
 
 function tLoadQuizOptions() {
@@ -493,15 +501,142 @@ function tLoadQuizOptions() {
 
 // ── 탭 전환 ──
 function tTab(tab) {
-  ['results','answers','register'].forEach(function(t){
-    document.getElementById('t-tab-'+t).style.display = t===tab ? 'block' : 'none';
+  ['pending','results','answers','register'].forEach(function(t){
+    var el = document.getElementById('t-tab-'+t);
+    if (el) el.style.display = t===tab ? 'block' : 'none';
     var btn = document.getElementById('ttab-'+t);
-    if (t===tab) {
-      btn.style.background = 'var(--accent)'; btn.style.color = 'white';
-      btn.style.borderColor = 'var(--accent)';
+    if (btn) {
+      if (t===tab) { btn.style.background='var(--accent)'; btn.style.color='white'; btn.style.borderColor='var(--accent)'; }
+      else { btn.style.background='transparent'; btn.style.color='var(--muted)'; btn.style.borderColor='var(--border)'; }
+    }
+  });
+  if (tab==='pending') tLoadPending();
+  if (tab==='results') tLoadResults();
+}
+
+// ── 채점 대기 목록 ──
+function tLoadPending() {
+  var container = document.getElementById('t-pending-list');
+  container.innerHTML = '<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px">불러오는 중...</div>';
+
+  fetch(GAS_URL, { method:'POST', body:JSON.stringify({action:'getPendingTeacher'}) })
+  .then(function(r){return r.json();})
+  .then(function(data){
+    if (!data.success || data.list.length===0) {
+      container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--green);font-size:14px">🎉 채점 대기 없음!</div>';
+      return;
+    }
+    var html = '';
+    data.list.forEach(function(item){
+      html += '<div class="card" style="margin-bottom:12px">';
+      html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">';
+      html += '<div><div style="font-weight:700;font-size:15px">'+item.name+' 학생</div>';
+      html += '<div style="font-size:12px;color:var(--muted)">'+item.quizName+'</div></div>';
+      html += '<div style="font-size:11px;color:var(--muted)">'+item.time.substring(0,10)+'</div></div>';
+
+      html += '<div style="font-size:12px;color:var(--blue);margin-bottom:10px;font-weight:600">채점 요청 문제: '+item.nums.join(', ')+'</div>';
+
+      // 각 문제 O/X 버튼
+      item.nums.forEach(function(num){
+        var cleanNum = num.replace('번','');
+        var prevGrade = item.grades[num] || '';
+        html += '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">';
+        html += '<div style="font-family:DM Mono,monospace;font-size:13px;color:var(--muted);min-width:40px">'+num+'</div>';
+        html += '<button onclick="tGradeBtn(this,''+item.name+'',''+item.quizId+'',''+num+'','O')" '+
+          'style="flex:1;padding:8px;border-radius:8px;border:1.5px solid var(--border);cursor:pointer;font-weight:700;font-size:14px;'+
+          (prevGrade==='O'?'background:var(--green);color:white;border-color:var(--green)':'background:var(--bg);color:var(--green)')+
+          '" data-grade="'+(prevGrade==='O'?'O':'')+'">✓ 맞음</button>';
+        html += '<button onclick="tGradeBtn(this,''+item.name+'',''+item.quizId+'',''+num+'','X')" '+
+          'style="flex:1;padding:8px;border-radius:8px;border:1.5px solid var(--border);cursor:pointer;font-weight:700;font-size:14px;'+
+          (prevGrade==='X'?'background:var(--red);color:white;border-color:var(--red)':'background:var(--bg);color:var(--red)')+
+          '" data-grade="'+(prevGrade==='X'?'X':'')+'">✗ 틀림</button>';
+        html += '</div>';
+      });
+
+      html += '<button onclick="tSubmitGrade(''+item.name+'',''+item.quizId+'','+item.row+',''+item.nums.join(',')+'',this)" '+
+        'class="btn btn-primary" style="margin-top:12px">채점 완료 → 아이에게 문자 보내기</button>';
+      html += '</div>';
+    });
+    container.innerHTML = html;
+  }).catch(function(){
+    container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--red);font-size:13px">불러오기 실패</div>';
+  });
+}
+
+// 채점 버튼 토글
+var _teacherGrades = {};  // {name_quizId_num: 'O'/'X'}
+
+function tGradeBtn(btn, name, quizId, num, grade) {
+  var key = name+'_'+quizId+'_'+num;
+  _teacherGrades[key] = grade;
+
+  var parent = btn.parentNode;
+  var btns = parent.querySelectorAll('button');
+  btns.forEach(function(b){
+    b.style.background = 'var(--bg)';
+    b.style.color = b.textContent.includes('✓') ? 'var(--green)' : 'var(--red)';
+    b.style.borderColor = 'var(--border)';
+  });
+  btn.style.background = grade==='O' ? 'var(--green)' : 'var(--red)';
+  btn.style.color = 'white';
+  btn.style.borderColor = grade==='O' ? 'var(--green)' : 'var(--red)';
+}
+
+function tSubmitGrade(name, quizId, row, numsStr, btn) {
+  var nums = numsStr.split(',').map(function(n){return n.trim();});
+  var grades = {};
+  var allGraded = true;
+
+  nums.forEach(function(num){
+    var key = name+'_'+quizId+'_'+num;
+    if (_teacherGrades[key]) {
+      grades[num] = _teacherGrades[key];
     } else {
-      btn.style.background = 'transparent'; btn.style.color = 'var(--muted)';
-      btn.style.borderColor = 'var(--border)';
+      allGraded = false;
+    }
+  });
+
+  if (!allGraded) {
+    alert('모든 문제를 채점해주세요!');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '저장 중...';
+
+  fetch(GAS_URL, {
+    method:'POST',
+    body:JSON.stringify({ action:'saveTeacherGrade', name:name, studentName:name, quizId:quizId, row:row, grades:grades })
+  })
+  .then(function(r){return r.json();})
+  .then(function(data){
+    if (data.success) {
+      // 결과 문자 발송
+      var correctCount = Object.values(grades).filter(function(v){return v==='O';}).length;
+      var total = Object.keys(grades).length;
+      var msg = '[플러스발상] '+name+' 학생 선생님 채점 결과\n';
+      msg += '채점 문제: '+nums.join(', ')+'\n';
+      msg += '결과: ';
+      nums.forEach(function(num){
+        msg += num+' '+( grades[num]==='O'?'✓':'✗')+' ';
+      });
+      msg += '\n맞은 수: '+correctCount+'/'+total;
+      if (data.finalScore) msg += '\n최종 점수: '+data.finalScore+'점';
+
+      var encoded = encodeURIComponent(msg);
+      // 아이 전화번호 직접 입력 모달
+      var phone = prompt(name+' 학생 전화번호를 입력하세요
+(취소하면 문자 발송 없이 완료)');
+      if (phone) {
+        window.location.href = 'sms:'+phone.replace(/-/g,'')+'?body='+encoded;
+      }
+      btn.textContent = '✓ 완료!';
+      btn.style.background = 'var(--green)';
+      setTimeout(function(){ tLoadPending(); }, 1500);
+    } else {
+      btn.disabled = false;
+      btn.textContent = '채점 완료 → 아이에게 문자 보내기';
+      alert('저장 실패');
     }
   });
 }
@@ -542,8 +677,10 @@ function tLoadResults() {
             '<div style="flex:1;background:var(--blue-bg);border-radius:8px;padding:8px;text-align:center">' +
               '<div style="font-size:10px;color:var(--blue)">완성도</div><div style="font-weight:700;color:'+color+'">'+completion+'%</div></div>' +
           '</div>' +
-          '<div style="font-size:12px;color:var(--muted)">✗ 오답: '+r.wrong+'</div>' +
-          (r.teacher>0 ? '<div style="font-size:12px;color:var(--blue);margin-top:2px">👨‍🏫 선생님채점 '+r.teacher+'문제 대기</div>' : '') +
+          '<div style="font-size:12px;color:var(--muted)">✗ 틀린 번호: '+(r.wrong||'없음')+'</div>' +
+          (r.teacher>0 && r.teacherNums && r.teacherNums!=='없음'
+            ? '<div style="font-size:12px;color:var(--blue);margin-top:4px">👨‍🏫 선생님 채점 요청: '+r.teacherNums+'</div>'
+            : (r.teacher>0 ? '<div style="font-size:12px;color:var(--blue);margin-top:4px">👨‍🏫 선생님채점 '+r.teacher+'문제 대기</div>' : '')) +
         '</div>';
     });
     container.innerHTML = html;
@@ -985,7 +1122,9 @@ function saveResultToSheets(result) {
         quizId:result.quizId, quizName:result.quizName,
         studentName:result.studentName, score:result.score,
         correct:result.correct, autoTotal:result.autoTotal,
-        teacherTotal:result.teacherTotal, details:result.details
+        teacherTotal:result.teacherTotal, details:result.details,
+        wrongNums: result.details.filter(function(d){return d.status==='wrong';}).map(function(d){return d.num+'번';}).join(', '),
+        teacherNums: result.details.filter(function(d){return d.status==='teacher';}).map(function(d){return d.num+'번';}).join(', ')
       })
     });
   } catch(e) { console.log('저장 실패:', e); }
