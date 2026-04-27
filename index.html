@@ -542,19 +542,17 @@ function tLoadPending() {
         var prevGrade = item.grades[num] || '';
         html += '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">';
         html += '<div style="font-family:DM Mono,monospace;font-size:13px;color:var(--muted);min-width:40px">'+num+'</div>';
-        html += '<button onclick="tGradeBtn(this,''+item.name+'',''+item.quizId+'',''+num+'','O')" '+
-          'style="flex:1;padding:8px;border-radius:8px;border:1.5px solid var(--border);cursor:pointer;font-weight:700;font-size:14px;'+
-          (prevGrade==='O'?'background:var(--green);color:white;border-color:var(--green)':'background:var(--bg);color:var(--green)')+
-          '" data-grade="'+(prevGrade==='O'?'O':'')+'">✓ 맞음</button>';
-        html += '<button onclick="tGradeBtn(this,''+item.name+'',''+item.quizId+'',''+num+'','X')" '+
-          'style="flex:1;padding:8px;border-radius:8px;border:1.5px solid var(--border);cursor:pointer;font-weight:700;font-size:14px;'+
-          (prevGrade==='X'?'background:var(--red);color:white;border-color:var(--red)':'background:var(--bg);color:var(--red)')+
-          '" data-grade="'+(prevGrade==='X'?'X':'')+'">✗ 틀림</button>';
+        var oStyle = prevGrade==='O' ? 'background:var(--green);color:white;border-color:var(--green)' : 'background:var(--bg);color:var(--green)';
+        var xStyle = prevGrade==='X' ? 'background:var(--red);color:white;border-color:var(--red)' : 'background:var(--bg);color:var(--red)';
+        var safeName = item.name.replace(/'/g, "\\'");
+        var safeQuizId = item.quizId.replace(/'/g, "\\'");
+        var safeNum = num.replace(/'/g, "\\'");
+        html += '<button onclick="tGradeBtn(this,\'' + safeName + '\',\'' + safeQuizId + '\',\'' + safeNum + '\',\'O\')" style="flex:1;padding:8px;border-radius:8px;border:1.5px solid var(--border);cursor:pointer;font-weight:700;font-size:14px;' + oStyle + '">' + '✓ 맞음</button>';
+        html += '<button onclick="tGradeBtn(this,\'' + safeName + '\',\'' + safeQuizId + '\',\'' + safeNum + '\',\'X\')" style="flex:1;padding:8px;border-radius:8px;border:1.5px solid var(--border);cursor:pointer;font-weight:700;font-size:14px;' + xStyle + '">' + '✗ 틀림</button>';
         html += '</div>';
       });
 
-      html += '<button onclick="tSubmitGrade(''+item.name+'',''+item.quizId+'','+item.row+',''+item.nums.join(',')+'',this)" '+
-        'class="btn btn-primary" style="margin-top:12px">채점 완료 → 아이에게 문자 보내기</button>';
+      html += '<button onclick="tSubmitGrade(this,\'' + safeName + '\',\'' + safeQuizId + '\',' + item.row + ',\'' + item.nums.join(',') + '\')" class="btn btn-primary" style="margin-top:12px">채점 완료 → 아이에게 문자 보내기</button>';
       html += '</div>';
     });
     container.innerHTML = html;
@@ -625,8 +623,7 @@ function tSubmitGrade(name, quizId, row, numsStr, btn) {
 
       var encoded = encodeURIComponent(msg);
       // 아이 전화번호 직접 입력 모달
-      var phone = prompt(name+' 학생 전화번호를 입력하세요
-(취소하면 문자 발송 없이 완료)');
+      var phone = prompt(name+' 학생 전화번호를 입력하세요 (취소하면 문자 발송 없이 완료)');
       if (phone) {
         window.location.href = 'sms:'+phone.replace(/-/g,'')+'?body='+encoded;
       }
@@ -713,7 +710,7 @@ function tLoadAnswers() {
             '<option value="단답형"'+(p.type==='단답형'?' selected':'')+'>주관식</option>' +
           '</select>' +
           '<input type="text" id="ans-'+p.num+'" value="'+p.answer+'" style="flex:1;padding:6px 10px;border-radius:6px;border:1px solid var(--border);font-size:14px;font-family:DM Mono,monospace;outline:none;background:var(--bg)">' +
-          '<button onclick="tSaveAnswer(''+quizId+'','+p.num+')" style="padding:6px 12px;border-radius:6px;border:none;background:var(--green);color:white;font-size:12px;font-weight:700;cursor:pointer">저장</button>' +
+          '<button onclick="tSaveAnswer(\'' + quizId + '\',' + p.num + ')" style="padding:6px 12px;border-radius:6px;border:none;background:var(--green);color:white;font-size:12px;font-weight:700;cursor:pointer">저장</button>' +
         '</div>';
     });
     html += '</div>';
