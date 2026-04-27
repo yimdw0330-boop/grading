@@ -634,16 +634,37 @@ function showResult(r) {
     detail.appendChild(wrap);
   });
 
-  // 재채점 버튼
+  // 재채점 버튼 + 문자 전송
   var tw = document.getElementById('r-teacher-wrap');
   var teacherNums = r.details.filter(function(d){return d.status==='teacher';}).map(function(d){return d.num+'번';});
   tw.innerHTML =
     '<button class="btn btn-yellow" onclick="sRegrade()" style="margin-bottom:8px">↺ 수정 후 재채점하기</button>' +
+    '<button class="btn btn-blue" onclick="sendSMS()" style="margin-bottom:8px">📱 선생님께 결과 문자 보내기</button>' +
     (teacherNums.length > 0
       ? '<div class="card" style="margin-top:0"><div class="card-title">선생님 채점 대기</div><div style="font-size:13px;color:var(--muted);line-height:1.8">'+teacherNums.join(', ')+'</div></div>'
       : '');
 
   showView('v-student-result');
+}
+
+function sendSMS() {
+  var r = window._lastResult;
+  if (!r) return;
+
+  var wrongNums = r.details.filter(function(d){return d.status==='wrong';}).map(function(d){return d.num+'번';});
+  var teacherNums = r.details.filter(function(d){return d.status==='teacher';}).map(function(d){return d.num+'번';});
+
+  var msg = '[플러스발상] ' + r.studentName + ' 학생\n';
+  msg += '시험지: ' + r.quizName + '\n';
+  msg += '점수: ' + r.score + '점 (' + r.correct + '/' + r.autoTotal + ')\n';
+  msg += '틀린 문제: ' + (wrongNums.length > 0 ? wrongNums.join(', ') : '없음') + '\n';
+  if (teacherNums.length > 0) {
+    msg += '선생님 채점 요청: ' + teacherNums.join(', ');
+  }
+
+  var phone = '01033348796';
+  var encoded = encodeURIComponent(msg);
+  window.location.href = 'sms:' + phone + '?body=' + encoded;
 }
 
 function editChoice(num, val, btn) {
@@ -683,6 +704,7 @@ function sRegrade() {
   sState.answers = newAnswers;
   var result = gradeAnswers(newAnswers);
   saveResultToSheets(result);
+  window._lastResult = result;
   showResult(result);
 }
 
