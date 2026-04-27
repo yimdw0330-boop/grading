@@ -634,34 +634,55 @@ function showResult(r) {
     detail.appendChild(wrap);
   });
 
-  // 재채점 버튼 + 문자 전송
+  // 최종 결과 요약 + 버튼
   var tw = document.getElementById('r-teacher-wrap');
+  var wrongNums = r.details.filter(function(d){return d.status==='wrong';}).map(function(d){return d.num+'번';});
   var teacherNums = r.details.filter(function(d){return d.status==='teacher';}).map(function(d){return d.num+'번';});
+
+  var summaryHtml =
+    '<div class="card" style="margin-top:0;background:var(--bg)">' +
+      '<div class="card-title">최종 결과</div>' +
+      '<div style="font-size:14px;line-height:2">' +
+        '<div>✗ <strong>틀린 번호:</strong> ' + (wrongNums.length > 0 ? wrongNums.join(', ') : '없음') + '</div>' +
+        (teacherNums.length > 0 ? '<div>👨‍🏫 <strong>선생님 채점 요청:</strong> ' + teacherNums.join(', ') + '</div>' : '') +
+      '</div>' +
+    '</div>';
+
+  // 문자 내용 미리보기
+  var msgContent = buildSMSText(r);
+  var smsPreviewHtml =
+    '<div class="card" style="margin-top:0">' +
+      '<div class="card-title">📱 선생님께 전송할 내용</div>' +
+      '<div style="font-size:13px;line-height:1.8;font-family:DM Mono,monospace;white-space:pre-wrap;color:var(--text)">' + msgContent + '</div>' +
+      '<div style="font-size:11px;color:var(--muted);margin-top:8px">💻 PC에서는 위 내용을 복사해서 문자/카톡으로 보내주세요</div>' +
+      '<button class="btn btn-blue" onclick="sendSMS()" style="margin-top:10px">📱 문자 앱으로 바로 보내기 (모바일)</button>' +
+    '</div>';
+
   tw.innerHTML =
     '<button class="btn btn-yellow" onclick="sRegrade()" style="margin-bottom:8px">↺ 수정 후 재채점하기</button>' +
-    '<button class="btn btn-blue" onclick="sendSMS()" style="margin-bottom:8px">📱 선생님께 결과 문자 보내기</button>' +
-    (teacherNums.length > 0
-      ? '<div class="card" style="margin-top:0"><div class="card-title">선생님 채점 대기</div><div style="font-size:13px;color:var(--muted);line-height:1.8">'+teacherNums.join(', ')+'</div></div>'
-      : '');
+    summaryHtml +
+    smsPreviewHtml;
 
   showView('v-student-result');
+}
+
+function buildSMSText(r) {
+  var wrongNums = r.details.filter(function(d){return d.status==='wrong';}).map(function(d){return d.num+'번';});
+  var teacherNums = r.details.filter(function(d){return d.status==='teacher';}).map(function(d){return d.num+'번';});
+  var msg = '[플러스발상] ' + r.studentName + ' 학생\n';
+  msg += '시험지: ' + r.quizName + '\n';
+  msg += '점수: ' + r.score + '점 (' + r.correct + '/' + r.autoTotal + ')\n';
+  msg += '틀린 번호: ' + (wrongNums.length > 0 ? wrongNums.join(', ') : '없음') + '\n';
+  if (teacherNums.length > 0) {
+    msg += '선생님 채점 요청: ' + teacherNums.join(', ');
+  }
+  return msg;
 }
 
 function sendSMS() {
   var r = window._lastResult;
   if (!r) return;
-
-  var wrongNums = r.details.filter(function(d){return d.status==='wrong';}).map(function(d){return d.num+'번';});
-  var teacherNums = r.details.filter(function(d){return d.status==='teacher';}).map(function(d){return d.num+'번';});
-
-  var msg = '[플러스발상] ' + r.studentName + ' 학생\n';
-  msg += '시험지: ' + r.quizName + '\n';
-  msg += '점수: ' + r.score + '점 (' + r.correct + '/' + r.autoTotal + ')\n';
-  msg += '틀린 문제: ' + (wrongNums.length > 0 ? wrongNums.join(', ') : '없음') + '\n';
-  if (teacherNums.length > 0) {
-    msg += '선생님 채점 요청: ' + teacherNums.join(', ');
-  }
-
+  var msg = buildSMSText(r);
   var phone = '01033348796';
   var encoded = encodeURIComponent(msg);
   window.location.href = 'sms:' + phone + '?body=' + encoded;
