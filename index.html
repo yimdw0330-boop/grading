@@ -328,45 +328,87 @@ select.input { cursor: pointer; }
   <button class="btn btn-primary" onclick="sReset()" style="margin-top:8px">처음으로</button>
 </div>
 
-<!-- ── 선생님 VIEW ── -->
+<!-- ── 선생님 로그인 ── -->
+<div class="view" id="v-teacher-login">
+  <div style="height:40px"></div>
+  <div class="card" style="text-align:center">
+    <div style="font-size:2rem;margin-bottom:12px">🔑</div>
+    <div style="font-size:17px;font-weight:700;margin-bottom:4px">선생님 전용</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:20px">비밀번호를 입력해주세요</div>
+    <input class="input" type="password" id="t-pw-input" placeholder="비밀번호" style="margin-bottom:8px" onkeydown="if(event.key==='Enter')tLogin()">
+    <div id="t-pw-err" class="error-msg"></div>
+    <button class="btn btn-primary" onclick="tLogin()" style="margin-top:8px">입력</button>
+  </div>
+</div>
+
+<!-- ── 선생님 메인 ── -->
 <div class="view" id="v-teacher-main">
   <div style="height:16px"></div>
-  <div class="card">
-    <div class="card-title">등록된 시험지</div>
-    <div id="t-quiz-list">
-      <div style="text-align:center;padding:20px;color:var(--muted);font-size:13px">불러오는 중...</div>
+
+  <!-- 탭 메뉴 -->
+  <div style="display:flex;gap:8px;margin-bottom:16px">
+    <button onclick="tTab('results')" id="ttab-results" style="flex:1;padding:10px;border-radius:10px;border:1.5px solid var(--accent);background:var(--accent);color:white;font-weight:700;font-size:13px;cursor:pointer;font-family:Noto Sans KR,sans-serif">📊 채점결과</button>
+    <button onclick="tTab('answers')" id="ttab-answers" style="flex:1;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:transparent;color:var(--muted);font-weight:700;font-size:13px;cursor:pointer;font-family:Noto Sans KR,sans-serif">✏️ 정답수정</button>
+    <button onclick="tTab('register')" id="ttab-register" style="flex:1;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:transparent;color:var(--muted);font-weight:700;font-size:13px;cursor:pointer;font-family:Noto Sans KR,sans-serif">📄 등록</button>
+  </div>
+
+  <!-- 채점결과 탭 -->
+  <div id="t-tab-results">
+    <div class="card">
+      <div class="card-title">시험지 선택</div>
+      <select class="input" id="t-result-quiz" onchange="tLoadResults()">
+        <option value="">전체 보기</option>
+      </select>
+    </div>
+    <div id="t-results-list">
+      <div style="text-align:center;padding:30px;color:var(--muted);font-size:13px">불러오는 중...</div>
     </div>
   </div>
-  <div class="card">
-    <div class="card-title">📄 PDF로 정답 등록</div>
-    <div style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.6">
-      답지 PDF를 올리면 AI가 읽어서 자동으로 정답을 등록해요.
+
+  <!-- 정답수정 탭 -->
+  <div id="t-tab-answers" style="display:none">
+    <div class="card">
+      <div class="card-title">시험지 선택</div>
+      <select class="input" id="t-edit-quiz" onchange="tLoadAnswers()">
+        <option value="">시험지를 선택하세요</option>
+      </select>
     </div>
-    <div style="margin-bottom:10px">
-      <div style="font-size:12px;color:var(--muted);margin-bottom:6px">시험지 ID</div>
-      <input class="input" type="text" id="t-quiz-id" placeholder="예: 공통수학I_1-2_(K1)" autocomplete="off">
-    </div>
-    <div style="margin-bottom:10px">
-      <div style="font-size:12px;color:var(--muted);margin-bottom:6px">시험지 이름</div>
-      <input class="input" type="text" id="t-quiz-name" placeholder="예: 공통수학I 1-2 K1" autocomplete="off">
-    </div>
-    <div style="margin-bottom:10px">
-      <div style="font-size:12px;color:var(--muted);margin-bottom:6px">문제 수</div>
-      <input class="input" type="number" id="t-quiz-count" placeholder="예: 54" min="1" max="200">
-    </div>
-    <div class="upload-zone" id="t-upload-zone" style="border:2px dashed var(--border);border-radius:14px;background:var(--bg);padding:24px;text-align:center;cursor:pointer;position:relative;overflow:hidden;">
-      <input type="file" id="t-pdf-file" accept="application/pdf,image/*" onchange="tOnFile(event)" style="position:absolute;inset:0;opacity:0;cursor:pointer;">
-      <div style="font-size:2rem;margin-bottom:8px">📎</div>
-      <div style="font-size:14px;font-weight:700;margin-bottom:4px">답지 PDF 또는 사진 올리기</div>
-      <div style="font-size:12px;color:var(--muted)">파일을 선택해주세요</div>
-    </div>
-    <div id="t-file-name" style="font-size:13px;color:var(--green);margin-top:8px;display:none"></div>
-    <div id="t-upload-msg"></div>
-    <button class="btn btn-green" id="t-register-btn" onclick="tRegisterQuiz()">
-      <div class="spinner"></div>
-      <span class="btn-text">✦ 정답 등록하기</span>
-    </button>
+    <div id="t-answers-list"></div>
   </div>
+
+  <!-- 등록 탭 -->
+  <div id="t-tab-register" style="display:none">
+    <div class="card">
+      <div class="card-title">📄 PDF로 정답 등록</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.6">답지 PDF를 올리면 AI가 읽어서 자동으로 정답을 등록해요.</div>
+      <div style="margin-bottom:10px">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:6px">시험지 ID</div>
+        <input class="input" type="text" id="t-quiz-id" placeholder="예: 공통수학I_1-2_(K1)" autocomplete="off">
+      </div>
+      <div style="margin-bottom:10px">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:6px">시험지 이름</div>
+        <input class="input" type="text" id="t-quiz-name" placeholder="예: 공통수학I 1-2 K1" autocomplete="off">
+      </div>
+      <div style="margin-bottom:10px">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:6px">문제 수</div>
+        <input class="input" type="number" id="t-quiz-count" placeholder="예: 54" min="1" max="200">
+      </div>
+      <div style="border:2px dashed var(--border);border-radius:14px;background:var(--bg);padding:24px;text-align:center;cursor:pointer;position:relative;overflow:hidden;">
+        <input type="file" id="t-pdf-file" accept="application/pdf,image/*" onchange="tOnFile(event)" style="position:absolute;inset:0;opacity:0;cursor:pointer;">
+        <div style="font-size:2rem;margin-bottom:8px">📎</div>
+        <div style="font-size:14px;font-weight:700;margin-bottom:4px">답지 PDF 또는 사진 올리기</div>
+        <div style="font-size:12px;color:var(--muted)">파일을 선택해주세요</div>
+      </div>
+      <div id="t-file-name" style="font-size:13px;color:var(--green);margin-top:8px;display:none"></div>
+      <div id="t-upload-msg"></div>
+      <button class="btn btn-green" id="t-register-btn" onclick="tRegisterQuiz()">
+        <div class="spinner"></div>
+        <span class="btn-text">✦ 정답 등록하기</span>
+      </button>
+    </div>
+  </div>
+
+  <button class="btn btn-outline" onclick="tLogout()" style="margin-top:16px">로그아웃</button>
 </div>
 
 </main>
@@ -393,10 +435,174 @@ function switchMode(mode) {
     document.getElementById('topbar-title').textContent = '학생 채점';
     loadQuizList('s-quiz-select');
   } else {
-    showView('v-teacher-main');
     document.getElementById('topbar-title').textContent = '선생님';
-    loadTeacherQuizList();
+    if (window._teacherLoggedIn) {
+      showView('v-teacher-main');
+      tInitMain();
+    } else {
+      showView('v-teacher-login');
+    }
   }
+}
+
+// ── 선생님 로그인 ──
+function tLogin() {
+  var pw = document.getElementById('t-pw-input').value;
+  var err = document.getElementById('t-pw-err');
+  fetch(GAS_URL, { method:'POST', body:JSON.stringify({action:'teacherLogin', password:pw}) })
+  .then(function(r){return r.json();})
+  .then(function(data){
+    if (data.success) {
+      window._teacherLoggedIn = true;
+      document.getElementById('t-pw-input').value = '';
+      showView('v-teacher-main');
+      tInitMain();
+    } else {
+      err.textContent = data.message || '비밀번호가 틀렸습니다.';
+    }
+  }).catch(function(){ err.textContent = '네트워크 오류'; });
+}
+
+function tLogout() {
+  window._teacherLoggedIn = false;
+  showView('v-teacher-login');
+}
+
+function tInitMain() {
+  loadQuizList('s-quiz-select');
+  tLoadQuizOptions();
+  tLoadResults();
+}
+
+function tLoadQuizOptions() {
+  fetch(GAS_URL, { method:'POST', body:JSON.stringify({action:'getQuizList'}) })
+  .then(function(r){return r.json();})
+  .then(function(data){
+    if (!data.success) return;
+    var sel1 = document.getElementById('t-result-quiz');
+    var sel2 = document.getElementById('t-edit-quiz');
+    if (sel1) sel1.innerHTML = '<option value="">전체 보기</option>';
+    if (sel2) sel2.innerHTML = '<option value="">시험지를 선택하세요</option>';
+    data.list.forEach(function(q){
+      var opt = '<option value="'+q.id+'">'+q.name+'</option>';
+      if (sel1) sel1.innerHTML += opt;
+      if (sel2) sel2.innerHTML += opt;
+    });
+  });
+}
+
+// ── 탭 전환 ──
+function tTab(tab) {
+  ['results','answers','register'].forEach(function(t){
+    document.getElementById('t-tab-'+t).style.display = t===tab ? 'block' : 'none';
+    var btn = document.getElementById('ttab-'+t);
+    if (t===tab) {
+      btn.style.background = 'var(--accent)'; btn.style.color = 'white';
+      btn.style.borderColor = 'var(--accent)';
+    } else {
+      btn.style.background = 'transparent'; btn.style.color = 'var(--muted)';
+      btn.style.borderColor = 'var(--border)';
+    }
+  });
+}
+
+// ── 채점결과 로드 ──
+function tLoadResults() {
+  var quizId = document.getElementById('t-result-quiz') ? document.getElementById('t-result-quiz').value : '';
+  var container = document.getElementById('t-results-list');
+  if (!container) return;
+  container.innerHTML = '<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px">불러오는 중...</div>';
+
+  var action = quizId ? 'getStudentResults' : 'getAllResults';
+  fetch(GAS_URL, { method:'POST', body:JSON.stringify({action:action, quizId:quizId}) })
+  .then(function(r){return r.json();})
+  .then(function(data){
+    if (!data.success || data.results.length === 0) {
+      container.innerHTML = '<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px">채점 결과가 없어요</div>';
+      return;
+    }
+    var html = '';
+    data.results.forEach(function(r){
+      var completion = r.completion || Math.round((r.correct/r.total)*100);
+      var color = completion>=90?'var(--green)':completion>=70?'var(--blue)':completion>=50?'var(--yellow)':'var(--red)';
+      html +=
+        '<div style="padding:14px;border:1px solid var(--border);border-radius:12px;margin-bottom:8px;background:var(--white)">' +
+          '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">' +
+            '<div style="font-weight:700;font-size:15px">'+r.name+' 학생</div>' +
+            '<div style="font-family:DM Mono,monospace;font-size:20px;font-weight:700;color:'+color+'">'+r.score+'점</div>' +
+          '</div>' +
+          '<div style="font-size:12px;color:var(--muted);margin-bottom:6px">'+r.quizName+'  |  '+r.time+'</div>' +
+          '<div style="display:flex;gap:8px;margin-bottom:8px">' +
+            '<div style="flex:1;background:var(--bg);border-radius:8px;padding:8px;text-align:center">' +
+              '<div style="font-size:10px;color:var(--muted)">전체</div><div style="font-weight:700">'+r.total+'</div></div>' +
+            '<div style="flex:1;background:var(--green-bg);border-radius:8px;padding:8px;text-align:center">' +
+              '<div style="font-size:10px;color:var(--green)">맞음</div><div style="font-weight:700;color:var(--green)">'+r.correct+'</div></div>' +
+            '<div style="flex:1;background:var(--red-bg);border-radius:8px;padding:8px;text-align:center">' +
+              '<div style="font-size:10px;color:var(--red)">틀림</div><div style="font-weight:700;color:var(--red)">'+(r.total-r.correct)+'</div></div>' +
+            '<div style="flex:1;background:var(--blue-bg);border-radius:8px;padding:8px;text-align:center">' +
+              '<div style="font-size:10px;color:var(--blue)">완성도</div><div style="font-weight:700;color:'+color+'">'+completion+'%</div></div>' +
+          '</div>' +
+          '<div style="font-size:12px;color:var(--muted)">✗ 오답: '+r.wrong+'</div>' +
+          (r.teacher>0 ? '<div style="font-size:12px;color:var(--blue);margin-top:2px">👨‍🏫 선생님채점 '+r.teacher+'문제 대기</div>' : '') +
+        '</div>';
+    });
+    container.innerHTML = html;
+  }).catch(function(){
+    container.innerHTML = '<div style="text-align:center;padding:30px;color:var(--red);font-size:13px">불러오기 실패</div>';
+  });
+}
+
+// ── 정답 수정 로드 ──
+function tLoadAnswers() {
+  var quizId = document.getElementById('t-edit-quiz').value;
+  var container = document.getElementById('t-answers-list');
+  if (!quizId) { container.innerHTML = ''; return; }
+  container.innerHTML = '<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px">불러오는 중...</div>';
+
+  fetch(GAS_URL, { method:'POST', body:JSON.stringify({action:'getQuizAnswers', quizId:quizId}) })
+  .then(function(r){return r.json();})
+  .then(function(data){
+    if (!data.success || data.problems.length === 0) {
+      container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px">정답이 없어요</div>';
+      return;
+    }
+    var html = '<div class="card"><div class="card-title">정답 수정 — 수정 후 저장 버튼을 누르세요</div>';
+    data.problems.forEach(function(p){
+      html +=
+        '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">' +
+          '<div style="font-family:DM Mono,monospace;font-size:13px;color:var(--muted);min-width:36px">'+p.num+'번</div>' +
+          '<select id="atype-'+p.num+'" style="padding:6px 8px;border-radius:6px;border:1px solid var(--border);font-size:12px;background:var(--bg)">' +
+            '<option value="객관식5"'+(p.type==='객관식5'?' selected':'')+'>객관식</option>' +
+            '<option value="단답형"'+(p.type==='단답형'?' selected':'')+'>주관식</option>' +
+          '</select>' +
+          '<input type="text" id="ans-'+p.num+'" value="'+p.answer+'" style="flex:1;padding:6px 10px;border-radius:6px;border:1px solid var(--border);font-size:14px;font-family:DM Mono,monospace;outline:none;background:var(--bg)">' +
+          '<button onclick="tSaveAnswer(''+quizId+'','+p.num+')" style="padding:6px 12px;border-radius:6px;border:none;background:var(--green);color:white;font-size:12px;font-weight:700;cursor:pointer">저장</button>' +
+        '</div>';
+    });
+    html += '</div>';
+    container.innerHTML = html;
+  }).catch(function(){
+    container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--red);font-size:13px">불러오기 실패</div>';
+  });
+}
+
+function tSaveAnswer(quizId, num) {
+  var answer = document.getElementById('ans-'+num).value.trim();
+  var type = document.getElementById('atype-'+num).value;
+  if (!answer) { alert('정답을 입력해주세요'); return; }
+
+  fetch(GAS_URL, { method:'POST', body:JSON.stringify({action:'updateAnswer', quizId:quizId, num:num, answer:answer, type:type}) })
+  .then(function(r){return r.json();})
+  .then(function(data){
+    if (data.success) {
+      var btn = event.target;
+      btn.textContent = '✓';
+      btn.style.background = 'var(--accent)';
+      setTimeout(function(){ btn.textContent = '저장'; btn.style.background = 'var(--green)'; }, 1500);
+    } else {
+      alert('저장 실패: ' + data.message);
+    }
+  });
 }
 
 function showView(id) {
