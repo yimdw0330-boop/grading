@@ -574,59 +574,74 @@ function showResult(r) {
     ? '<div class="wrong-summary"><div class="wrong-title">❌ 틀린 문제 ('+wrongNums.length+'개)</div><div class="wrong-nums">'+wrongNums.join('  ·  ')+'</div></div>'
     : '<div class="wrong-summary" style="background:var(--green-bg);border-color:rgba(30,122,74,0.2)"><div class="wrong-title" style="color:var(--green)">🎉 모두 맞았어요!</div></div>';
 
-  // 답안 수정 섹션
-  var editWrap = document.getElementById('r-edit-wrap');
-  var editList = document.getElementById('r-edit-list');
-  editList.innerHTML = '';
+  // 답안 수정 섹션 숨기기
+  document.getElementById('r-edit-wrap').style.display = 'none';
 
-  r.details.forEach(function(d){
-    if (d.status === 'teacher') return;
-    var row = document.createElement('div');
-    row.style.cssText = 'display:flex;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);gap:8px;';
-
-    var numSpan = '<span style="font-family:DM Mono,monospace;font-size:13px;color:var(--muted);min-width:34px">'+d.num+'번</span>';
-    var badge = d.status==='correct'
-      ? '<span class="rbadge badge-o">✓</span>'
-      : '<span class="rbadge badge-x">✗</span>';
-
-    if (sState.problems.find(function(p){return p.num==d.num && p.type==='객관식5';})) {
-      var btnsHtml = '';
-      for (var i=1; i<=5; i++) {
-        var sel = String(d.studentAns)===String(i) ? 'style="background:var(--accent);color:white;border-color:var(--accent)"' : '';
-        btnsHtml += '<button '+sel+' style="padding:6px 10px;border-radius:6px;border:1.5px solid var(--border);cursor:pointer;font-weight:700;font-size:13px;background:var(--bg)" onclick="editChoice('+d.num+','+i+',this)">'+i+'</button>';
-      }
-      row.innerHTML = numSpan+'<div style="display:flex;gap:4px;flex:1">'+btnsHtml+'</div>'+badge;
-    } else {
-      row.innerHTML = numSpan+
-        '<input type="text" value="'+d.studentAns+'" id="edit-'+d.num+'" style="flex:1;padding:6px 10px;border-radius:8px;border:1.5px solid var(--border);font-size:14px;font-family:DM Mono,monospace;outline:none;" autocomplete="off">'+
-        badge;
-    }
-    editList.appendChild(row);
-  });
-
-  editWrap.style.display = 'block';
-
-  // 문제별 결과
+  // 문제별 결과 + 인라인 수정
   var detail = document.getElementById('r-detail');
   detail.innerHTML = '';
+
   r.details.forEach(function(d){
-    var row = document.createElement('div');
-    row.className = 'result-row';
+    var isChoice = !!sState.problems.find(function(p){return p.num==d.num && p.type==='객관식5';});
+    var wrap = document.createElement('div');
+    wrap.style.cssText = 'padding:12px 0;border-bottom:1px solid var(--border);';
+
     if (d.status === 'teacher') {
-      row.innerHTML = '<div class="rnum">'+d.num+'번</div><div class="rcontent"><div class="rstudent">선생님 채점 요청</div></div><div class="rbadge badge-teacher">채점대기</div>';
-    } else if (d.status === 'correct') {
-      row.innerHTML = '<div class="rnum">'+d.num+'번</div><div class="rcontent"><div class="rstudent">내 답: '+d.studentAns+'</div></div><div class="rbadge badge-o">✓</div>';
+      wrap.innerHTML =
+        '<div style="display:flex;align-items:center;gap:10px">' +
+          '<div class="rnum">'+d.num+'번</div>' +
+          '<div class="rcontent"><div class="rstudent">선생님 채점 요청</div></div>' +
+          '<div class="rbadge badge-teacher">채점대기</div>' +
+        '</div>';
     } else {
-      row.innerHTML = '<div class="rnum">'+d.num+'번</div><div class="rcontent"><div class="rstudent">내 답: '+(d.studentAns||'(미입력)')+'</div></div><div class="rbadge badge-x">✗</div>';
+      var badge = d.status==='correct'
+        ? '<div class="rbadge badge-o">✓</div>'
+        : '<div class="rbadge badge-x">✗</div>';
+
+      // 상단: 번호 + 내 답 + O/X
+      wrap.innerHTML =
+        '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">' +
+          '<div class="rnum">'+d.num+'번</div>' +
+          '<div class="rcontent"><div class="rstudent">내 답: <strong>'+( d.studentAns||'(미입력)')+'</strong></div></div>' +
+          badge +
+        '</div>';
+
+      // 하단: 수정 입력
+      var editDiv = document.createElement('div');
+      editDiv.style.cssText = 'margin-left:44px;';
+
+      if (isChoice) {
+        var btnsHtml = '<div style="display:flex;gap:6px;align-items:center">';
+        btnsHtml += '<span style="font-size:11px;color:var(--muted);margin-right:2px">수정:</span>';
+        for (var i=1; i<=5; i++) {
+          var isSel = String(d.studentAns)===String(i);
+          var selStyle = isSel ? 'background:var(--accent);color:white;border-color:var(--accent)' : 'background:var(--bg);color:var(--text)';
+          btnsHtml += '<button style="padding:6px 10px;border-radius:6px;border:1.5px solid var(--border);cursor:pointer;font-weight:700;font-size:13px;'+selStyle+'" onclick="editChoice('+d.num+','+i+',this)">'+i+'</button>';
+        }
+        btnsHtml += '</div>';
+        editDiv.innerHTML = btnsHtml;
+      } else {
+        editDiv.innerHTML =
+          '<div style="display:flex;gap:8px;align-items:center">' +
+            '<span style="font-size:11px;color:var(--muted);white-space:nowrap">수정:</span>' +
+            '<input type="text" value="'+d.studentAns+'" id="edit-'+d.num+'" ' +
+              'style="flex:1;padding:7px 10px;border-radius:8px;border:1.5px solid var(--border);font-size:14px;font-family:DM Mono,monospace;outline:none;background:var(--bg)" ' +
+              'autocomplete="off" autocorrect="off" autocapitalize="off">' +
+          '</div>';
+      }
+      wrap.appendChild(editDiv);
     }
-    detail.appendChild(row);
+    detail.appendChild(wrap);
   });
 
-  var teacherNums = r.details.filter(function(d){return d.status==='teacher';}).map(function(d){return d.num+'번';});
+  // 재채점 버튼
   var tw = document.getElementById('r-teacher-wrap');
-  tw.innerHTML = teacherNums.length > 0
-    ? '<div class="card" style="margin-top:0"><div class="card-title">선생님 채점 대기</div><div style="font-size:13px;color:var(--muted);line-height:1.8">'+teacherNums.join(', ')+'</div></div>'
-    : '';
+  var teacherNums = r.details.filter(function(d){return d.status==='teacher';}).map(function(d){return d.num+'번';});
+  tw.innerHTML =
+    '<button class="btn btn-yellow" onclick="sRegrade()" style="margin-bottom:8px">↺ 수정 후 재채점하기</button>' +
+    (teacherNums.length > 0
+      ? '<div class="card" style="margin-top:0"><div class="card-title">선생님 채점 대기</div><div style="font-size:13px;color:var(--muted);line-height:1.8">'+teacherNums.join(', ')+'</div></div>'
+      : '');
 
   showView('v-student-result');
 }
