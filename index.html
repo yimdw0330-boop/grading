@@ -525,6 +525,7 @@ function sSubmitAnswers() {
   err.textContent = '';
   var result = gradeAnswers(sState.answers);
   saveResultToSheets(result);
+  window._lastResult = result;
   showResult(result);
 }
 
@@ -617,7 +618,7 @@ function showResult(r) {
         for (var i=1; i<=5; i++) {
           var isSel = String(d.studentAns)===String(i);
           var selStyle = isSel ? 'background:var(--accent);color:white;border-color:var(--accent)' : 'background:var(--bg);color:var(--text)';
-          btnsHtml += '<button style="padding:6px 10px;border-radius:6px;border:1.5px solid var(--border);cursor:pointer;font-weight:700;font-size:13px;'+selStyle+'" onclick="editChoice('+d.num+','+i+',this)">'+i+'</button>';
+          btnsHtml += '<button class="rgrade-choice-'+d.num+(isSel?" selected":"")+'" data-val="'+i+'" style="padding:6px 10px;border-radius:6px;border:1.5px solid var(--border);cursor:pointer;font-weight:700;font-size:13px;'+selStyle+'" onclick="editChoice('+d.num+','+i+',this)">'+i+'</button>';
         }
         btnsHtml += '</div>';
         editDiv.innerHTML = btnsHtml;
@@ -750,28 +751,27 @@ function editChoice(num, val, btn) {
     b.style.background = 'var(--bg)';
     b.style.color = 'var(--text)';
     b.style.borderColor = 'var(--border)';
+    b.classList.remove('selected');
   });
   btn.style.background = 'var(--accent)';
   btn.style.color = 'white';
   btn.style.borderColor = 'var(--accent)';
+  btn.classList.add('selected');
 }
 
 // ── 재채점 ──
 function sRegrade() {
   var newAnswers = Object.assign({}, sState.answers);
+
   sState.problems.forEach(function(p){
     if (sState.teacherRequested.has(p.num)) return;
+
     if (p.type === '객관식5') {
-      var parent = document.querySelector('#r-edit-list [onclick*="editChoice('+p.num+',"]')
-        || document.querySelector('#r-edit-list');
-      // 객관식 선택값 읽기
-      var btns = document.querySelectorAll('[onclick*="editChoice('+p.num+',"]');
-      btns.forEach(function(b){
-        if (b.style.background.includes('1a1a1a') || b.style.background === 'var(--accent)' || b.style.background === 'rgb(26, 26, 26)') {
-          var match = b.getAttribute('onclick').match(/editChoice\(\d+,(\d+)/);
-          if (match) newAnswers[p.num] = match[1];
-        }
-      });
+      // 인라인 결과 화면에서 선택된 버튼 읽기
+      var selectedBtn = document.querySelector('.rgrade-choice-'+p.num+'.selected');
+      if (selectedBtn) {
+        newAnswers[p.num] = selectedBtn.getAttribute('data-val');
+      }
     } else {
       var el = document.getElementById('edit-'+p.num);
       if (el) newAnswers[p.num] = el.value.trim();
