@@ -227,7 +227,19 @@ select.input { cursor: pointer; }
   </div>
   <div class="card">
     <div class="card-title">이름</div>
-    <input class="input" type="text" id="s-name" placeholder="이름 입력" maxlength="10" autocomplete="off">
+    <select class="input" id="s-name">
+      <option value="">불러오는 중...</option>
+    </select>
+    <div style="border-top:1px dashed var(--border);margin-top:14px;padding-top:14px">
+      <button class="btn btn-outline" onclick="toggleAddName()" style="margin-top:0">+ 명단에 없으면 추가</button>
+      <div id="s-add-name-wrap" style="display:none;margin-top:10px">
+        <input class="input" type="text" id="s-new-name" placeholder="새 이름 입력" maxlength="10" autocomplete="off">
+        <button class="btn btn-green" onclick="addStudentName()">
+          <div class="spinner"></div>
+          <span class="btn-text">명단에 추가</span>
+        </button>
+      </div>
+    </div>
   </div>
   <div id="s-select-err" class="error-msg"></div>
   <button class="btn btn-primary" onclick="sGoToInput()">다음 →</button>
@@ -442,6 +454,7 @@ function switchMode(mode) {
     showView('v-student-select');
     document.getElementById('topbar-title').textContent = '학생 채점';
     loadQuizList('s-quiz-select');
+    loadStudentNames();
   } else {
     document.getElementById('topbar-title').textContent = '선생님';
     if (window._teacherLoggedIn) {
@@ -761,6 +774,77 @@ function loadQuizList(selectId) {
       sel.innerHTML = '<option value="">등록된 시험지가 없습니다</option>';
     }
   }).catch(function(){ sel.innerHTML = '<option value="">불러오기 실패</option>'; });
+}
+
+// ── 학생 명단 ──
+function loadStudentNames() {
+  var sel = document.getElementById('s-name');
+  if (!sel) return;
+  var prev = sel.value;
+  sel.innerHTML = '<option value="">불러오는 중...</option>';
+  fetch(GAS_URL, { method:'POST', body:JSON.stringify({action:'getStudentNames'}) })
+  .then(function(r){return r.json();})
+  .then(function(data){
+    if (data.success && data.names && data.names.length > 0) {
+      sel.innerHTML = '<option value="">이름을 선택하세요</option>';
+      data.names.forEach(function(name){
+        sel.innerHTML += '<option value="'+name+'">'+name+'</option>';
+      });
+      if (prev) sel.value = prev;
+    } else {
+      sel.innerHTML = '<option value="">명단이 없습니다</option>';
+    }
+  }).catch(function(){ sel.innerHTML = '<option value="">불러오기 실패</option>'; });
+}
+
+function toggleAddName() {
+  var wrap = document.getElementById('s-add-name-wrap');
+  if (!wrap) return;
+  if (wrap.style.display === 'none') {
+    wrap.style.display = 'block';
+    document.getElementById('s-new-name').focus();
+  } else {
+    wrap.style.display = 'none';
+  }
+}
+
+function addStudentName() {
+  var input = document.getElementById('s-new-name');
+  var btn = input.nextElementSibling;
+  var name = input.value.trim();
+  var err = document.getElementById('s-select-err');
+  if (!name) { err.textContent = '추가할 이름을 입력해주세요.'; return; }
+  err.textContent = '';
+
+  btn.disabled = true; btn.classList.add('loading');
+  fetch(GAS_URL, { method:'POST', body:JSON.stringify({action:'addStudentName', name:name}) })
+  .then(function(r){return r.json();})
+  .then(function(data){
+    if (data.success) {
+      // 명단 새로고침 후 추가한 이름 자동 선택
+      fetch(GAS_URL, { method:'POST', body:JSON.stringify({action:'getStudentNames'}) })
+      .then(function(r){return r.json();})
+      .then(function(d){
+        var sel = document.getElementById('s-name');
+        if (d.success && d.names && d.names.length > 0) {
+          sel.innerHTML = '<option value="">이름을 선택하세요</option>';
+          d.names.forEach(function(n){
+            sel.innerHTML += '<option value="'+n+'">'+n+'</option>';
+          });
+        }
+        sel.value = name;
+        input.value = '';
+        document.getElementById('s-add-name-wrap').style.display = 'none';
+        btn.disabled = false; btn.classList.remove('loading');
+      });
+    } else {
+      err.textContent = data.message || '이름 추가에 실패했습니다.';
+      btn.disabled = false; btn.classList.remove('loading');
+    }
+  }).catch(function(){
+    err.textContent = '네트워크 오류가 발생했습니다.';
+    btn.disabled = false; btn.classList.remove('loading');
+  });
 }
 
 function loadTeacherQuizList() {
@@ -1200,7 +1284,7 @@ function getExtractPrompt(count) {
   return '이 파일은 수학 답지입니다.\n1번부터 '+count+'번까지 각 문제의 정답을 추출해주세요.\n\n규칙:\n- 반드시 JSON 배열로만 응답\n- 형식: [{"num": 문제번호, "type": "문제유형", "answer": "정답"}, ...]\n- type: "객관식5"(①~⑤) 또는 "단답형"\n- 객관식 정답은 번호만: "1","2","3","4","5"\n- 마크다운, 코드블록 없이 JSON만 출력';
 }
 
-window.onload = function(){ loadQuizList('s-quiz-select'); };
+window.onload = function(){ loadQuizList('s-quiz-select'); loadStudentNames(); };
 </script>
 </body>
 </html>
