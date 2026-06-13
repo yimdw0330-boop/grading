@@ -152,6 +152,10 @@ select.input { cursor: pointer; }
 .choice-btn.selected { border-color: var(--accent); background: var(--accent); color: white; }
 .choice-btn:active { transform: scale(0.95); }
 
+/* 6지선다(주관식 변환) — 보기에 텍스트가 들어가므로 2열 그리드 */
+.mc6-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.choice-btn.mc6-btn { font-size: 15px; padding: 12px 8px; white-space: normal; word-break: break-all; line-height: 1.3; min-height: 46px; }
+
 /* 주관식 입력 */
 .subjective-input {
   width: 100%; background: var(--bg); border: 1.5px solid var(--border);
@@ -901,6 +905,22 @@ function sGoToInput() {
   .catch(function(){ err.textContent = '네트워크 오류가 발생했습니다.'; });
 }
 
+// ── 6지선다 변환 헬퍼 ──
+function isMC6(p) {
+  return !!(p && p.type === '단답형' && Array.isArray(p.distractors) && p.distractors.length === 4);
+}
+function shuffleArr(arr) {
+  var a = arr.slice();
+  for (var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+function escapeHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 // ── 답안 입력 폼 생성 ──
 function buildAnswerInputs() {
   var list = document.getElementById('s-answer-list');
@@ -912,7 +932,7 @@ function buildAnswerInputs() {
     div.className = 'answer-item';
     div.id = 'item-'+p.num;
 
-    var typeLabel = p.type === '객관식5' ? '객관식' : '주관식';
+    var typeLabel = (p.type === '객관식5' || isMC6(p)) ? '객관식' : '주관식';
     var headerHtml = '<div class="answer-item-header"><div class="answer-num">'+p.num+'</div><div class="answer-type">'+typeLabel+'</div></div>';
 
     if (p.type === '객관식5') {
@@ -921,6 +941,16 @@ function buildAnswerInputs() {
         btns += '<button class="choice-btn" onclick="selectChoice('+p.num+','+i+')" id="cb-'+p.num+'-'+i+'">'+i+'</button>';
       }
       div.innerHTML = headerHtml + '<div class="choice-btns">'+btns+'</div>';
+    } else if (isMC6(p)) {
+      // 주관식 → 6지선다: [정답 + 오답4개] 셔플 + "모름" 고정 (정답위치는 저장 안 함)
+      var opts = shuffleArr([p.answer].concat(p.distractors));
+      opts.push('모름');
+      p._opts = opts;
+      var mbtns = '';
+      opts.forEach(function(opt, idx){
+        mbtns += '<button class="choice-btn mc6-btn" onclick="selectMC6('+p.num+','+idx+')" id="mc6-'+p.num+'-'+idx+'">'+escapeHtml(String(opt))+'</button>';
+      });
+      div.innerHTML = headerHtml + '<div class="mc6-grid">'+mbtns+'</div>';
     } else {
       div.innerHTML = headerHtml +
         '<input class="subjective-input" type="text" id="sa-'+p.num+'" placeholder="답 입력 (예: 5, -3, x^2+1)" oninput="onSubjectiveInput('+p.num+')" autocomplete="off" autocorrect="off" autocapitalize="off">' +
@@ -937,6 +967,17 @@ function selectChoice(num, val) {
   for (var i=1; i<=5; i++) {
     var btn = document.getElementById('cb-'+num+'-'+i);
     if (btn) btn.classList.toggle('selected', i === val);
+  }
+  updateProgress();
+}
+
+function selectMC6(num, idx) {
+  var p = sState.problems.find(function(x){ return String(x.num) === String(num); });
+  if (!p || !p._opts) return;
+  sState.answers[num] = String(p._opts[idx]);   // 위치가 아니라 버튼에 담긴 값을 저장
+  for (var i = 0; i < p._opts.length; i++) {
+    var b = document.getElementById('mc6-'+num+'-'+i);
+    if (b) b.classList.toggle('selected', i === idx);
   }
   updateProgress();
 }
@@ -1011,7 +1052,7 @@ function gradeAnswers(answersMap) {
     autoTotal++;
     var isCorrect = normalize(studentAns) === normalize(p.answer);
     if (isCorrect) correct++;
-    details.push({num:p.num, type:p.type, studentAns:studentAns, correctAns:p.answer, status:isCorrect?'correct':'wrong'});
+    details.push({num:p.num, type:p.type, studentAns:studentAns, correctAns:p.answer, status:isCorrect?'correct':'wrong', dontKnow:(String(studentAns)==='모름')});
   });
 
   var score = autoTotal > 0 ? Math.round(correct/autoTotal*100) : 0;
@@ -1036,13 +1077,24 @@ function showResult(r) {
     ? '<div class="wrong-summary"><div class="wrong-title">❌ 틀린 문제 ('+wrongNums.length+'개)</div><div class="wrong-nums">'+wrongNums.join('  ·  ')+'</div></div>'
     : '<div class="wrong-summary" style="background:var(--green-bg);border-color:rgba(30,122,74,0.2)"><div class="wrong-title" style="color:var(--green)">🎉 모두 맞았어요!</div></div>';
 
+  // 모름 별도 집계 (오답으로 처리되지만 따로 표시)
+  var dontKnowNums = r.details.filter(function(d){return d.dontKnow;}).map(function(d){return d.num+'번';});
+  if (dontKnowNums.length > 0) {
+    document.getElementById('r-wrong-wrap').innerHTML +=
+      '<div class="wrong-summary" style="background:var(--yellow-bg);border-color:rgba(212,130,10,0.25)">' +
+      '<div class="wrong-title" style="color:var(--yellow)">🤔 모름으로 답한 문제 ('+dontKnowNums.length+'개)</div>' +
+      '<div class="wrong-nums">'+dontKnowNums.join('  ·  ')+'</div></div>';
+  }
+
   document.getElementById('r-edit-wrap').style.display = 'none';
 
   // 문제별 결과 + 수정칸
   var detail = document.getElementById('r-detail');
   detail.innerHTML = '';
   r.details.forEach(function(d){
-    var isChoice = !!sState.problems.find(function(p){return p.num==d.num && p.type==='객관식5';});
+    var prob = sState.problems.find(function(p){return String(p.num)===String(d.num);});
+    var isChoice = !!(prob && prob.type==='객관식5');
+    var mc6 = isMC6(prob);
     var wrap = document.createElement('div');
     wrap.style.cssText = 'padding:12px 0;border-bottom:1px solid var(--border);';
     if (d.status === 'teacher') {
@@ -1061,6 +1113,15 @@ function showResult(r) {
         }
         btnsHtml += '</div>';
         editDiv.innerHTML = btnsHtml;
+      } else if (mc6 && prob._opts) {
+        var mHtml = '<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center"><span style="font-size:11px;color:var(--muted);margin-right:2px">수정:</span>';
+        prob._opts.forEach(function(opt){
+          var oSel = String(d.studentAns)===String(opt);
+          var oStyle = oSel ? 'background:var(--accent);color:white;border-color:var(--accent)' : 'background:var(--bg);color:var(--text)';
+          mHtml += '<button class="rgrade-mc6-'+d.num+(oSel?' selected':'')+'" data-val="'+escapeHtml(String(opt))+'" style="padding:6px 10px;border-radius:6px;border:1.5px solid var(--border);cursor:pointer;font-weight:700;font-size:13px;'+oStyle+'" onclick="editMC6('+d.num+',this)">'+escapeHtml(String(opt))+'</button>';
+        });
+        mHtml += '</div>';
+        editDiv.innerHTML = mHtml;
       } else {
         editDiv.innerHTML = '<div style="display:flex;gap:8px;align-items:center"><span style="font-size:11px;color:var(--muted);white-space:nowrap">수정:</span><input type="text" value="'+d.studentAns+'" id="edit-'+d.num+'" style="flex:1;padding:7px 10px;border-radius:8px;border:1.5px solid var(--border);font-size:14px;font-family:DM Mono,monospace;outline:none;background:var(--bg)" autocomplete="off"></div>';
       }
@@ -1102,6 +1163,20 @@ function sendSMS() {
 }
 
 function editChoice(num, val, btn) {
+  var parent = btn.parentNode;
+  parent.querySelectorAll('button').forEach(function(b){
+    b.style.background = 'var(--bg)';
+    b.style.color = 'var(--text)';
+    b.style.borderColor = 'var(--border)';
+    b.classList.remove('selected');
+  });
+  btn.style.background = 'var(--accent)';
+  btn.style.color = 'white';
+  btn.style.borderColor = 'var(--accent)';
+  btn.classList.add('selected');
+}
+
+function editMC6(num, btn) {
   var parent = btn.parentNode;
   parent.querySelectorAll('button').forEach(function(b){
     b.style.background = 'var(--bg)';
@@ -1180,6 +1255,9 @@ function sRegrade() {
       if (selectedBtn) {
         newAnswers[p.num] = selectedBtn.getAttribute('data-val');
       }
+    } else if (isMC6(p)) {
+      var selMc6 = document.querySelector('.rgrade-mc6-'+p.num+'.selected');
+      if (selMc6) newAnswers[p.num] = selMc6.getAttribute('data-val');
     } else {
       var el = document.getElementById('edit-'+p.num);
       if (el) newAnswers[p.num] = el.value.trim();
