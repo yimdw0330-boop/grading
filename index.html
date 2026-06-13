@@ -290,17 +290,6 @@ select.input { cursor: pointer; }
   </div>
   <div id="r-wrong-wrap"></div>
 
-  <!-- 답안 수정 섹션 -->
-  <div class="card" id="r-edit-wrap" style="display:none">
-    <div class="card-title">✏️ 답안 수정</div>
-    <div style="font-size:13px;color:var(--muted);margin-bottom:12px">잘못 입력한 번호를 수정하고 재채점하세요</div>
-    <div id="r-edit-list"></div>
-    <button class="btn btn-yellow" onclick="sRegrade()" style="margin-top:8px">
-      <div class="spinner"></div>
-      <span class="btn-text">↺ 재채점하기</span>
-    </button>
-  </div>
-
   <div class="card">
     <div class="card-title">문제별 결과</div>
     <div id="r-detail"></div>
@@ -1086,54 +1075,25 @@ function showResult(r) {
       '<div class="wrong-nums">'+dontKnowNums.join('  ·  ')+'</div></div>';
   }
 
-  document.getElementById('r-edit-wrap').style.display = 'none';
-
-  // 문제별 결과 + 수정칸
+  // 문제별 결과 (보기 전용 — 채점 후 답 수정 불가)
   var detail = document.getElementById('r-detail');
   detail.innerHTML = '';
   r.details.forEach(function(d){
-    var prob = sState.problems.find(function(p){return String(p.num)===String(d.num);});
-    var isChoice = !!(prob && prob.type==='객관식5');
-    var mc6 = isMC6(prob);
     var wrap = document.createElement('div');
     wrap.style.cssText = 'padding:12px 0;border-bottom:1px solid var(--border);';
     if (d.status === 'teacher') {
       wrap.innerHTML = '<div style="display:flex;align-items:center;gap:10px"><div class="rnum">'+d.num+'번</div><div class="rcontent"><div class="rstudent">선생님 채점 요청</div></div><div class="rbadge badge-teacher">채점대기</div></div>';
     } else {
       var badge = d.status==='correct' ? '<div class="rbadge badge-o">✓</div>' : '<div class="rbadge badge-x">✗</div>';
-      wrap.innerHTML = '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><div class="rnum">'+d.num+'번</div><div class="rcontent"><div class="rstudent">내 답: <strong>'+(d.studentAns||'(미입력)')+'</strong></div></div>'+badge+'</div>';
-      var editDiv = document.createElement('div');
-      editDiv.style.cssText = 'margin-left:44px;';
-      if (isChoice) {
-        var btnsHtml = '<div style="display:flex;gap:6px;align-items:center"><span style="font-size:11px;color:var(--muted);margin-right:2px">수정:</span>';
-        for (var i=1; i<=5; i++) {
-          var isSel = String(d.studentAns)===String(i);
-          var selStyle = isSel ? 'background:var(--accent);color:white;border-color:var(--accent)' : 'background:var(--bg);color:var(--text)';
-          btnsHtml += '<button class="rgrade-choice-'+d.num+(isSel?' selected':'')+'" data-val="'+i+'" style="padding:6px 10px;border-radius:6px;border:1.5px solid var(--border);cursor:pointer;font-weight:700;font-size:13px;'+selStyle+'" onclick="editChoice('+d.num+','+i+',this)">'+i+'</button>';
-        }
-        btnsHtml += '</div>';
-        editDiv.innerHTML = btnsHtml;
-      } else if (mc6 && prob._opts) {
-        var mHtml = '<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center"><span style="font-size:11px;color:var(--muted);margin-right:2px">수정:</span>';
-        prob._opts.forEach(function(opt){
-          var oSel = String(d.studentAns)===String(opt);
-          var oStyle = oSel ? 'background:var(--accent);color:white;border-color:var(--accent)' : 'background:var(--bg);color:var(--text)';
-          mHtml += '<button class="rgrade-mc6-'+d.num+(oSel?' selected':'')+'" data-val="'+escapeHtml(String(opt))+'" style="padding:6px 10px;border-radius:6px;border:1.5px solid var(--border);cursor:pointer;font-weight:700;font-size:13px;'+oStyle+'" onclick="editMC6('+d.num+',this)">'+escapeHtml(String(opt))+'</button>';
-        });
-        mHtml += '</div>';
-        editDiv.innerHTML = mHtml;
-      } else {
-        editDiv.innerHTML = '<div style="display:flex;gap:8px;align-items:center"><span style="font-size:11px;color:var(--muted);white-space:nowrap">수정:</span><input type="text" value="'+d.studentAns+'" id="edit-'+d.num+'" style="flex:1;padding:7px 10px;border-radius:8px;border:1.5px solid var(--border);font-size:14px;font-family:DM Mono,monospace;outline:none;background:var(--bg)" autocomplete="off"></div>';
-      }
-      wrap.appendChild(editDiv);
+      var ansLabel = d.dontKnow ? '🤔 모름' : (d.studentAns || '(미입력)');
+      wrap.innerHTML = '<div style="display:flex;align-items:center;gap:10px"><div class="rnum">'+d.num+'번</div><div class="rcontent"><div class="rstudent">내 답: <strong>'+ansLabel+'</strong></div></div>'+badge+'</div>';
     }
     detail.appendChild(wrap);
   });
 
-  // 하단 버튼
+  // 하단 버튼 (재채점 제거 — 결과 화면은 보기 전용)
   document.getElementById('r-teacher-wrap').innerHTML =
-    '<button class="btn btn-yellow" onclick="sRegrade()" style="margin-bottom:8px">↺ 수정 후 재채점하기</button>' +
-    '<button class="btn btn-green" onclick="showFinalResult()" style="margin-bottom:8px">✓ 채점 완료 — 최종결과 보기</button>';
+    '<button class="btn btn-green" onclick="showFinalResult()" style="margin-bottom:8px">✓ 최종결과 보기</button>';
 
   showView('v-student-result');
 }
@@ -1162,35 +1122,7 @@ function sendSMS() {
   window.location.href = 'sms:' + phone + '?body=' + encoded;
 }
 
-function editChoice(num, val, btn) {
-  var parent = btn.parentNode;
-  parent.querySelectorAll('button').forEach(function(b){
-    b.style.background = 'var(--bg)';
-    b.style.color = 'var(--text)';
-    b.style.borderColor = 'var(--border)';
-    b.classList.remove('selected');
-  });
-  btn.style.background = 'var(--accent)';
-  btn.style.color = 'white';
-  btn.style.borderColor = 'var(--accent)';
-  btn.classList.add('selected');
-}
-
-function editMC6(num, btn) {
-  var parent = btn.parentNode;
-  parent.querySelectorAll('button').forEach(function(b){
-    b.style.background = 'var(--bg)';
-    b.style.color = 'var(--text)';
-    b.style.borderColor = 'var(--border)';
-    b.classList.remove('selected');
-  });
-  btn.style.background = 'var(--accent)';
-  btn.style.color = 'white';
-  btn.style.borderColor = 'var(--accent)';
-  btn.classList.add('selected');
-}
-
-// ── 재채점 ──
+// ── 최종 결과 ──
 function showFinalResult() {
   var r = window._lastResult;
   if (!r) return;
@@ -1241,34 +1173,6 @@ function showFinalResult() {
   document.getElementById('fr-sms').textContent = buildSMSText(r);
 
   showView('v-final-result');
-}
-
-function sRegrade() {
-  var newAnswers = Object.assign({}, sState.answers);
-
-  sState.problems.forEach(function(p){
-    if (sState.teacherRequested.has(p.num)) return;
-
-    if (p.type === '객관식5') {
-      // 인라인 결과 화면에서 선택된 버튼 읽기
-      var selectedBtn = document.querySelector('.rgrade-choice-'+p.num+'.selected');
-      if (selectedBtn) {
-        newAnswers[p.num] = selectedBtn.getAttribute('data-val');
-      }
-    } else if (isMC6(p)) {
-      var selMc6 = document.querySelector('.rgrade-mc6-'+p.num+'.selected');
-      if (selMc6) newAnswers[p.num] = selMc6.getAttribute('data-val');
-    } else {
-      var el = document.getElementById('edit-'+p.num);
-      if (el) newAnswers[p.num] = el.value.trim();
-    }
-  });
-
-  sState.answers = newAnswers;
-  var result = gradeAnswers(newAnswers);
-  saveResultToSheets(result);
-  window._lastResult = result;
-  showFinalResult();
 }
 
 // ── Sheets 저장 ──
